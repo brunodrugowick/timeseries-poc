@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
+
+    <meta charset="UTF-8">
+    <title>My Blood Pressure</title>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header (${useremail})"></div>
+<br>
+
+<div class="container-fluid">
+    <div class="container-fluid text-left">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Measurements</h5>
+                <p class="card-text">Here's a list for you:
+                    <span th:text="${measurements}"></span>
+                </p>
+                <a class="btn btn-primary disabled" href="#">Add Measurement</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" id="footer">
+    <br><br>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
