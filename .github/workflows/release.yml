@@ -1,0 +1,44 @@
+name: "Continuous Integration"
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.0
+
+      - name: read version
+        id: read-version
+        run: |
+          CHANGELOG_VERSION=$(sed '9!d' ./CHANGELOG.md | cut -d'[' -f2 | cut -d']' -f1)
+          echo 'Ignoring version case is "Unreleased"'
+          echo ::set-output name=version::$([[ "$CHANGELOG_VERSION" =~ ^(UNRELEASED|unreleased|Unreleased)$ ]] && echo '' || echo $CHANGELOG_VERSION)
+      - name: read changelog entry for version
+        if: ${{ steps.read-version.outputs.version != '' }}
+        id: changelog-reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: "${{ steps.read-version.outputs.version }}"
+          path: ./CHANGELOG.md
+      - name: check for existing release
+        if: ${{ steps.read-version.outputs.version != '' }}
+        id: check-release
+        run: |
+          VERSION=$(git ls-remote --tags origin | grep ${{ steps.read-version.outputs.version }} || [[ $? == 1 ]] && echo '')
+          MISSING=$([[ -z "$VERSION" ]] && echo 'true' || echo 'false')
+          echo ::set-output name=missing::$MISSING
+      - name: create release
+        if: ${{ steps.check-release.outputs.missing == 'true' && steps.read-version.outputs.version != '' }}
+        id: create-release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "${{ steps.read-version.outputs.version }}"
+          release_name: Blood Pressure Diary v${{ steps.read-version.outputs.version }}
+          body: ${{ steps.changelog-reader.outputs.changes }}
+          draft: false
+          prerelease: false
