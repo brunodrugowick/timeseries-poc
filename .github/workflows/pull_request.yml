@@ -30,5 +30,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
+
+      - name: Run tests
         run: |
           ./mvnw test
