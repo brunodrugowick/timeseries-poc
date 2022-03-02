@@ -11,22 +11,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
+// TODO make this more elegant. Make it in a way I don't need to copy-pasta code, just replace the Principal when it's a dev profile
 @Controller
-@Profile("!personal && !development")
-public class ControllerForEverything extends BaseController {
+@Profile("personal || development")
+public class ControllerForEverythingPersonalProfile extends BaseController {
+
+    private final String DUMMY_USERNAME = "developer";
 
     private final BloodPressureRepository repository;
 
-    public ControllerForEverything(BloodPressureRepository repository) {
+    public ControllerForEverythingPersonalProfile(BloodPressureRepository repository) {
         this.repository = repository;
     }
 
     @GetMapping
     public String homePage(Principal principal, Model model) {
 
-        var username = principal.getName();
+        var username = DUMMY_USERNAME;
         var all = repository.findAllByUsername(username);
 
         Map<Long, Integer[]> map = new HashMap<>();
@@ -49,7 +53,7 @@ public class ControllerForEverything extends BaseController {
         if (bindingResult.hasErrors()) return "new-measurement";
 
         var username = principal.getName();
-        measurement.setUsername(username);
+        measurement.setUsername(DUMMY_USERNAME);
         repository.save(measurement);
         return "redirect:/";
     }
