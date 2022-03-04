@@ -15,7 +15,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class BloodPressure {
+public class Measurement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

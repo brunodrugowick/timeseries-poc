@@ -7,55 +7,95 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
         // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
-        const real_data = /*[[${measurements}]]*/'noValue';
+        const measurements = /*[[${measurements}]]*/'noValue';
+        const events = /*[[${events}]]*/'noValue';
 
-        google.charts.load('current', {'packages':['line', 'table']});
+        google.charts.load('current', {'packages':['corechart', 'table']});
         google.charts.setOnLoadCallback(drawChart);
-        google.charts.setOnLoadCallback(drawTable);
+        google.charts.setOnLoadCallback(drawMeasurementsTable);
+        google.charts.setOnLoadCallback(drawEventsTable);
+
+        // TODO too much repetition in this script. Refactor.
 
         function drawChart() {
 
             // Create the data table.
-            var data = new google.visualization.DataTable();
+            const data = new google.visualization.DataTable();
             data.addColumn('datetime', 'Date');
             data.addColumn('number', 'High');
             data.addColumn('number', 'Low');
+            data.addColumn('number', 'Heart Rate');
 
-            Object.keys(real_data).forEach(function(key) {
+            Object.keys(measurements).forEach(function(key) {
                 const epochDate = parseInt(key);
-                data.addRow([ new Date(epochDate), real_data[key][0], real_data[key][1] ]);
+                data.addRow([ new Date(epochDate), measurements[key][0], measurements[key][1], measurements[key][2] ]);
             });
             data.sort([{column: 0}]);
 
             const options = {
                 title: 'Blood Pressure Over Time',
+                legend: { position: 'right' },
                 curveType: 'function',
-                legend: {position: 'bottom'},
                 hAxis: {
                     format: 'dd/MM HH:mm:ss'
+                },
+                seriesType: 'line',
+                series: {
+                    0: { lineWidth: 4, pointSize: 5, color: 'black' },
+                    1: { lineWidth: 3, pointSize: 4, color: 'blue'},
+                    2: { type: 'bars', color: '#D3D3D3' }
                 }
             };
 
-            const chart = new google.charts.Line(document.getElementById('chart_div'));
+            const chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
 
-            chart.draw(data, google.charts.Line.convertOptions(options));
+            chart.draw(data, options);
         }
 
-        function drawTable() {
-            var data = new google.visualization.DataTable();
+        function drawMeasurementsTable() {
+            const data = new google.visualization.DataTable();
             data.addColumn('datetime', 'Date');
-            data.addColumn('number', 'High');
-            data.addColumn('number', 'Low');
+            data.addColumn('number', 'High (mmHg)');
+            data.addColumn('number', 'Low (mmHg)');
+            data.addColumn('number', 'Heart Rate (BPM)');
 
-            Object.keys(real_data).forEach(function(key) {
+            Object.keys(measurements).forEach(function(key) {
                 const epochDate = parseInt(key);
-                data.addRow([ new Date(epochDate), real_data[key][0], real_data[key][1] ]);
+                data.addRow([ new Date(epochDate), measurements[key][0], measurements[key][1], measurements[key][2] ]);
             });
-            data.sort([{column: 0}]);
+            data.sort([{column: 0, desc: true}]);
 
-            var table = new google.visualization.Table(document.getElementById('table_div'));
+            var table = new google.visualization.Table(document.getElementById('table_measurements_div'));
+            table.draw(data, {
+                showRowNumber: false,
+                width: '100%',
+                allowHtml: true,
+                page: 'enable',
+                pageSize: 10,
+                pagingButtons: 'auto'
+            });
+        }
 
-            table.draw(data, {showRowNumber: false, width: '100%', height: '100%'});
+        function drawEventsTable() {
+            const data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Date');
+            data.addColumn('string', 'Description');
+
+            Object.keys(events).forEach(function(key) {
+                const epochDate = parseInt(key);
+                data.addRow([ new Date(epochDate), events[key] ]);
+            });
+            data.sort([{column: 0, desc: true}]);
+
+            var table = new google.visualization.Table(document.getElementById('table_events_div'));
+            table.draw(data, {
+                showRowNumber: false,
+                width: '100%',
+                allowHtml: true,
+                page: 'enable',
+                pageSize: 10,
+                pagingButtons: 'auto'
+            });
         }
 
     </script>
@@ -71,17 +111,33 @@
     <div class="container-fluid text-left">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Measurements</h5>
+                <h5 class="card-title">Dashboard</h5>
                 <div id="chart_div"></div>
+                <br>
                 <a class="btn btn-primary"
                    style="white-space: nowrap"
-                   href="/new">Add Measurement</a>
+                   href="/new" autofocus>Add Measurement</a>
+                <a class="btn btn-outline-primary"
+                   style="white-space: nowrap"
+                   href="/new-event">Add Event</a>
             </div>
         </div>
         <br><br>
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div id="table_div"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="card shadow-sm col-sm-6">
+                    <div class="card-body">
+                        <h6 class="card-title">Measurements</h6>
+                        <div id="table_measurements_div"></div>
+                    </div>
+                </div>
+                <div class="col-sm-1"></div>
+                <div class="card shadow-sm col-sm-5">
+                    <div class="card-body">
+                        <h6 class="card-title">Events</h6>
+                        <div id="table_events_div"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -91,6 +147,7 @@
     <br><br>
 </div>
 
+<script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

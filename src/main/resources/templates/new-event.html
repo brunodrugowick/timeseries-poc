@@ -3,7 +3,7 @@
 <head>
     <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
     <meta charset="UTF-8">
-    <title>Add Measurement</title>
+    <title>Add Event</title>
 </head>
 <body>
 
@@ -11,22 +11,13 @@
 <br>
 
 <div class="container" id="page">
-    <form th:object="${measurement}" th:method="post">
+    <form th:object="${event}" th:method="post">
         <br>
         <div class="form-group row">
-            <label for="high" class="col-sm-4 col-form-label">High (mmHg)</label>
-            <input th:field="*{high}" class="form-control col-sm-8" id="high"
-                   placeholder="132" type="number" maxlength="3" autofocus/>
-        </div>
-        <div class="form-group row">
-            <label for="low" class="col col-sm-4">Low (mmHg)</label>
-            <input th:field="*{low}" class="form-control col-sm-8" id="low"
-                   placeholder="84" type="number" maxlength="3"/>
-        </div>
-        <div class="form-group row">
-            <label for="heartRate" class="col col-sm-4">Heart Rate (BPM)</label>
-            <input th:field="*{heartRate}" class="form-control col-sm-8" id="heartRate"
-                   placeholder="70" type="number" maxlength="3"/>
+            <label for="description" class="col-sm-4 col-form-label">Event description</label>
+            <textarea th:field="*{description}" class="form-control col-sm-8" id="description"
+                   placeholder="Brief text describing an event you find relevant to your blood pressure measurements"
+                   type="text" rows="2" maxlength="144" autofocus></textarea>
         </div>
 
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
