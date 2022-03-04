@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @Controller
-public class NewMeasurementController {
+public class NewMeasurementController extends BaseController {
 
     // TODO Service Layer
     private final MeasurementsRepository repository;

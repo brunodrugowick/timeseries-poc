@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @Controller
-public class NewEventController {
+public class NewEventController extends BaseController {
 
     // TODO Service Layer
     private final EventsRepository repository;
