@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class BloodPressureInput {
+public class MeasurementInput {
 
     @NotNull(message = "High (mmHg) is mandatory")
     @Digits(fraction = 0, integer = 3, message = "High (mmHg) should be lower than 1000")

@@ -1,7 +1,9 @@
 package dev.drugowick.timeseriespoc.config;
 
-import dev.drugowick.timeseriespoc.domain.entity.BloodPressure;
-import dev.drugowick.timeseriespoc.domain.repository.BloodPressureRepository;
+import dev.drugowick.timeseriespoc.domain.entity.Event;
+import dev.drugowick.timeseriespoc.domain.entity.Measurement;
+import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
+import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +19,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @EnableWebSecurity
 public class MyConfiguration {
 
-    private final BloodPressureRepository repository;
+    private final MeasurementsRepository measurementsRepository;
+    private final EventsRepository eventsRepository;
 
-    public MyConfiguration(BloodPressureRepository repository) {
-        this.repository = repository;
+    public MyConfiguration(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository) {
+        this.measurementsRepository = measurementsRepository;
+        this.eventsRepository = eventsRepository;
     }
 
     @Bean
@@ -38,7 +42,7 @@ public class MyConfiguration {
     @Bean
     @ConditionalOnProperty(name="app.dev-mode", havingValue = "true")
     DevData developmentData() {
-        return new DevData(this.repository);
+        return new DevData(this.measurementsRepository, this.eventsRepository);
     }
 }
 
@@ -73,10 +77,12 @@ class DevSecurityConfig extends WebSecurityConfigurerAdapter {
  */
 class DevData {
 
-    private final BloodPressureRepository repository;
+    private final MeasurementsRepository measurementsRepository;
+    private final EventsRepository eventsRepository;
 
-    public DevData(BloodPressureRepository repository) {
-        this.repository = repository;
+    public DevData(MeasurementsRepository repository, EventsRepository eventsRepository) {
+        this.measurementsRepository = repository;
+        this.eventsRepository = eventsRepository;
 
         System.out.println("Adding development data.");
         addData();
@@ -86,13 +92,19 @@ class DevData {
         for (int i = 0; i < 50; i++) {
             Random r = new Random();
 
-            var bp = new BloodPressure();
+            var bp = new Measurement();
             bp.setHigh(ThreadLocalRandom.current().nextInt(120, 199));
             bp.setLow(ThreadLocalRandom.current().nextInt(60, 110));
             bp.setHeartRate(ThreadLocalRandom.current().nextInt(40, 110));
             bp.setUsername(DevUtil.USERNAME);
+            measurementsRepository.save(bp);
 
-            repository.save(bp);
+            if (i % 5 == 0) {
+                var e = new Event();
+                e.setDescription("Event number " + i);
+                e.setUsername(DevUtil.USERNAME);
+                eventsRepository.save(e);
+            }
         }
     }
 }
