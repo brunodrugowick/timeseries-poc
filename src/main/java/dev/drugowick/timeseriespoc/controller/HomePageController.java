@@ -1,5 +1,6 @@
 package dev.drugowick.timeseriespoc.controller;
 
+import dev.drugowick.timeseriespoc.domain.entity.Measurement;
 import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
 import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,8 @@ public class HomePageController extends BaseController {
         Map<Long, String> eventsMap = new HashMap<>();
         events.forEach(event -> eventsMap.put(event.getCreatedDate(), event.getDescription()));
 
+        var max = measurements.stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j);
+        max.ifPresent(integer -> model.addAttribute("maxMeasurement", integer));
         model.addAttribute("measurements", measurementsMap);
         model.addAttribute("events", eventsMap);
 

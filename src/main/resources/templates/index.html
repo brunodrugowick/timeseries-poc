@@ -9,6 +9,7 @@
         // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
         const measurements = /*[[${measurements}]]*/'noValue';
         const events = /*[[${events}]]*/'noValue';
+        const maxMeasurement = parseInt(/*[[${maxMeasurement}]]*/'noValue') + 5;
 
         google.charts.load('current', {'packages':['corechart', 'table']});
         google.charts.setOnLoadCallback(drawChart);
@@ -21,21 +22,52 @@
 
             // Create the data table.
             const data = new google.visualization.DataTable();
+            // X axis of the timeseries
             data.addColumn('datetime', 'Date');
+            // Columns for measurements
             data.addColumn('number', 'High');
             data.addColumn('number', 'Low');
             data.addColumn('number', 'Heart Rate');
+            // Columns for events
+            data.addColumn('number', 'Event');
+            // Tooltip Columns
+            data.addColumn({ type: 'string', role: 'annotation' });
+            data.addColumn({ type: 'string', role: 'annotationText' });
 
+            // Add measurements series
             Object.keys(measurements).forEach(function(key) {
                 const epochDate = parseInt(key);
-                data.addRow([ new Date(epochDate), measurements[key][0], measurements[key][1], measurements[key][2] ]);
+                data.addRow([
+                    new Date(epochDate), // X axis
+                    measurements[key][0], measurements[key][1], measurements[key][2], // measurement
+                    null, null, null // events
+                ]);
             });
             data.sort([{column: 0}]);
 
+            // Add events series
+            Object.keys(events).forEach(function(key) {
+                const epochDate = parseInt(key);
+                const description = events[key];
+                data.addRow([
+                    new Date(epochDate), // X axis
+                    null, null, null, // measurements
+                    maxMeasurement / 10, `${description.substring(0, 5)}...`, description // events (they're bars that go all the way to the top
+
+                ]);
+            });
+
             const options = {
-                title: 'Blood Pressure Over Time',
+                // title: 'Blood Pressure Over Time',
+                width: '100%', // here as a placeholder in case I want to change it later
+                height: '100%', // here as a placeholder in case I want to change it later
                 legend: { position: 'right' },
                 curveType: 'function',
+                tooltip: { isHtml: 'true' },
+                vAxis: {
+                    maxValue: maxMeasurement,
+                    viewWindow: { max: maxMeasurement }
+                },
                 hAxis: {
                     format: 'dd/MM HH:mm:ss'
                 },
@@ -43,8 +75,10 @@
                 series: {
                     0: { lineWidth: 4, pointSize: 5, color: 'black' },
                     1: { lineWidth: 3, pointSize: 4, color: 'blue'},
-                    2: { type: 'bars', color: '#D3D3D3' }
-                }
+                    2: { lineWidth: 1, pointSize: 2, color: '#D3D3D3'},
+                    3: { type: 'bars', isStacked: 'true', color: '#ffaaa8' }
+                },
+                chartArea: { left: 5, top: 5, width: '90%', height: '90%' }
             };
 
             const chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
@@ -71,7 +105,7 @@
                 width: '100%',
                 allowHtml: true,
                 page: 'enable',
-                pageSize: 10,
+                pageSize: 30,
                 pagingButtons: 'auto'
             });
         }
@@ -93,7 +127,7 @@
                 width: '100%',
                 allowHtml: true,
                 page: 'enable',
-                pageSize: 10,
+                pageSize: 30,
                 pagingButtons: 'auto'
             });
         }
@@ -111,7 +145,7 @@
     <div class="container-fluid text-left">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Dashboard</h5>
+                <h5 class="card-title">Blood Pressure Over Time</h5>
                 <div id="chart_div"></div>
                 <br>
                 <a class="btn btn-primary"
