@@ -38,8 +38,8 @@ public class HomePageController extends BaseController {
         Map<Long, String> eventsMap = new HashMap<>();
         events.forEach(event -> eventsMap.put(event.getCreatedDate(), event.getDescription()));
 
-        var max = measurements.stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j);
-        max.ifPresent(integer -> model.addAttribute("maxMeasurement", integer));
+        measurements.stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j)
+                        .ifPresent(max -> model.addAttribute("maxMeasurement", max));
         model.addAttribute("measurements", measurementsMap);
         model.addAttribute("events", eventsMap);
 
