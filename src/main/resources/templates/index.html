@@ -78,13 +78,22 @@
                     2: { lineWidth: 1, pointSize: 2, color: '#D3D3D3'},
                     3: { type: 'bars', tooltip: false, color: '#ffaaa8' }
                 },
-                chartArea: { left: 5, top: 5, width: '90%', height: '90%' }
+                chartArea: { width: '80%', height: '80%' }
             };
 
             const chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
 
             chart.draw(data, options);
         }
+
+        const tableOptions = {
+            showRowNumber: false,
+            width: '100%',
+            allowHtml: false,
+            // page: 'enable',
+            // pageSize: 30,
+            // pagingButtons: 'auto'
+        };
 
         function drawMeasurementsTable() {
             const data = new google.visualization.DataTable();
@@ -100,14 +109,7 @@
             data.sort([{column: 0, desc: true}]);
 
             var table = new google.visualization.Table(document.getElementById('table_measurements_div'));
-            table.draw(data, {
-                showRowNumber: false,
-                width: '100%',
-                allowHtml: true,
-                page: 'enable',
-                pageSize: 30,
-                pagingButtons: 'auto'
-            });
+            table.draw(data, tableOptions);
         }
 
         function drawEventsTable() {
@@ -122,14 +124,7 @@
             data.sort([{column: 0, desc: true}]);
 
             var table = new google.visualization.Table(document.getElementById('table_events_div'));
-            table.draw(data, {
-                showRowNumber: false,
-                width: '100%',
-                allowHtml: true,
-                page: 'enable',
-                pageSize: 30,
-                pagingButtons: 'auto'
-            });
+            table.draw(data, tableOptions);
         }
 
     </script>
@@ -143,6 +138,18 @@
 
 <div class="container-fluid">
     <div class="container-fluid text-left">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <label
+                <a class="btn btn-primary"
+                   style="white-space: nowrap"
+                   href="/new" autofocus>Add Measurement</a>
+                <a class="btn btn-outline-primary"
+                   style="white-space: nowrap"
+                   href="/new-event">Add Event</a>
+            </div>
+        </div>
+        <br><br>
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">Blood Pressure Over Time</h5>
