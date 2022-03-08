@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -90,19 +91,28 @@ class DevData {
 
     private void addData() {
         for (int i = 0; i < 50; i++) {
+            var createdDateOffset = (long) i * 60 * 60 * 24 * 1000;
             Random r = new Random();
 
             var bp = new Measurement();
-            bp.setHigh(ThreadLocalRandom.current().nextInt(120, 199));
+            bp.setHigh(ThreadLocalRandom.current().nextInt(110, 199));
             bp.setLow(ThreadLocalRandom.current().nextInt(60, 110));
             bp.setHeartRate(ThreadLocalRandom.current().nextInt(40, 110));
             bp.setUsername(DevUtil.USERNAME);
+            measurementsRepository.save(bp);
+
+            // Changing create date for dev data after saving
+            bp.setCreatedDate(Instant.now().toEpochMilli() - createdDateOffset);
             measurementsRepository.save(bp);
 
             if (i % 5 == 0) {
                 var e = new Event();
                 e.setDescription("Event number " + i);
                 e.setUsername(DevUtil.USERNAME);
+                eventsRepository.save(e);
+
+                // Changing create date for dev data after saving
+                e.setCreatedDate(Instant.now().toEpochMilli() - createdDateOffset);
                 eventsRepository.save(e);
             }
         }

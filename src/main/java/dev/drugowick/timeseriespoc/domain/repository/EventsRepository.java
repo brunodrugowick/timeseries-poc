@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface EventsRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findAllByUsername(String username);
+    List<Event> findAllByUsernameAndCreatedDateAfter(String username, Long createdDateAfter);
 }

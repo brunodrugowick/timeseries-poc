@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
         // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
         const measurements = /*[[${measurements}]]*/'noValue';
         const events = /*[[${events}]]*/'noValue';
-        const maxMeasurement = parseInt(/*[[${maxMeasurement}]]*/'noValue') + 5;
+        const maxMeasurement = parseInt(/*[[${maxMeasurement}]]*/'noValue') + 15;
 
         google.charts.load('current', {'packages':['corechart', 'table']});
         google.charts.setOnLoadCallback(drawChart);
@@ -138,14 +138,35 @@
 
 <div class="container-fluid">
     <div class="container-fluid text-left">
-        <div class="card shadow-sm">
+        <div class="card mb-auto shadow-lg">
+            <div class="card-header">
+                <div class="card-title row">
+                    <h4 class="col col-sm-8">Blood Pressure Over Time</h4>
+                    <div class="float-right col col-sm-4">
+                        <form th:action="@{/filter}">
+                            <div class="row">
+                                <div class="col-sm-4 col-form-label"></div>
+                                <select id="daysOffset" class="form-control col-sm-6" autofocus
+                                        th:name="daysOffset" onchange="this.form.submit()">
+                                    <option th:selected="${search.daysOffset} == 1" value="1">Last day</option>
+                                    <option th:selected="${search.daysOffset} == 3" value="3">Last 3 days</option>
+                                    <option th:selected="${search.daysOffset} == 5" value="5">Last 5 days</option>
+                                    <option th:selected="${search.daysOffset} == 10" value="10">Last 10 days</option>
+                                    <option th:selected="${search.daysOffset} == 30" value="30">Last 30 days</option>
+                                    <option th:selected="${search.daysOffset} == 999999" value="999999">Everything</option>
+                                </select>
+                                <div class="col-sm-2"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="card-body">
-                <h5 class="card-title">Blood Pressure Over Time</h5>
                 <div id="chart_div"></div>
                 <br>
                 <a class="btn btn-primary"
                    style="white-space: nowrap"
-                   href="/new" autofocus>Add Measurement</a>
+                   href="/new">Add Measurement</a>
                 <a class="btn btn-outline-primary"
                    style="white-space: nowrap"
                    href="/new-event">Add Event</a>
@@ -154,14 +175,14 @@
         <br><br>
         <div class="container-fluid">
             <div class="row">
-                <div class="card shadow-sm col-sm-6">
+                <div class="card mb-auto shadow-lg col-sm-6">
                     <div class="card-body">
                         <h6 class="card-title">Measurements</h6>
                         <div id="table_measurements_div"></div>
                     </div>
                 </div>
                 <div class="col-sm-1"></div>
-                <div class="card shadow-sm col-sm-5">
+                <div class="card mb-auto shadow-lg col-sm-5">
                     <div class="card-body">
                         <h6 class="card-title">Events</h6>
                         <div id="table_events_div"></div>
