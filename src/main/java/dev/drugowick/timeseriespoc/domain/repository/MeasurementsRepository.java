@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface MeasurementsRepository extends JpaRepository<Measurement, Long> {
 
-    List<Measurement> findAllByUsername(String username);
+    List<Measurement> findAllByUsernameAndCreatedDateAfter(String username, Long createdDateAfter);
 }
