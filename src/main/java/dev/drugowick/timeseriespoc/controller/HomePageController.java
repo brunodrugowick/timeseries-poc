@@ -2,8 +2,8 @@ package dev.drugowick.timeseriespoc.controller;
 
 import dev.drugowick.timeseriespoc.controller.dto.SearchParams;
 import dev.drugowick.timeseriespoc.domain.entity.Measurement;
-import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
-import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.service.UserData;
+import dev.drugowick.timeseriespoc.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,13 +17,10 @@ import java.util.Map;
 @Controller
 public class HomePageController extends BaseController {
 
-    // TODO Service Layer
-    private final MeasurementsRepository measurementsRepository;
-    private final EventsRepository eventsRepository;
+    private final UserDataService userDataService;
 
-    public HomePageController(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository) {
-        this.measurementsRepository = measurementsRepository;
-        this.eventsRepository = eventsRepository;
+    public HomePageController(UserDataService userDataService) {
+        this.userDataService = userDataService;
     }
 
     @RequestMapping
@@ -31,8 +28,12 @@ public class HomePageController extends BaseController {
 
         var search = new SearchParams();
 
-        addMeasurementsToModel(model, search, principal.getName());
-        addEventsToModel(model, search, principal.getName());
+        var userData =
+                userDataService.findAllByUsernameAndCreatedDateAfter(
+                        principal.getName(), daysFromNow(search.getDaysOffset()));
+
+        addMeasurementsToModel(userData, model);
+        addEventsToModel(userData, model);
 
         model.addAttribute("search", search);
 
@@ -42,37 +43,32 @@ public class HomePageController extends BaseController {
     @RequestMapping("/filter")
     public String homePageWithFilters(@ModelAttribute SearchParams search, Principal principal, Model model) {
 
-        addMeasurementsToModel(model, search, principal.getName());
-        addEventsToModel(model, search, principal.getName());
+        var userData =
+                userDataService.findAllByUsernameAndCreatedDateAfter(
+                        principal.getName(), daysFromNow(search.getDaysOffset()));
+
+        addMeasurementsToModel(userData, model);
+        addEventsToModel(userData, model);
 
         model.addAttribute("search", search);
 
         return "index";
     }
 
-    private void addMeasurementsToModel(Model model, SearchParams search, String username) {
-
-        var measurements =
-                measurementsRepository.findAllByUsernameAndCreatedDateAfter(
-                        username, daysFromNow(search.getDaysOffset()));
-
+    private void addMeasurementsToModel(UserData userData, Model model) {
         Map<Long, Integer[]> measurementsMap = new HashMap<>();
-        measurements.forEach(measurement -> measurementsMap.put(
+        userData.getMeasurementList().forEach(measurement -> measurementsMap.put(
                 measurement.getCreatedDate(),
                 new Integer[]{measurement.getHigh(), measurement.getLow(), measurement.getHeartRate(), measurement.getId().intValue()}));
         model.addAttribute("measurements", measurementsMap);
 
-        measurements.stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j)
+        userData.getMeasurementList().stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j)
                 .ifPresent(max -> model.addAttribute("maxMeasurement", max));
     }
 
-    private void addEventsToModel(Model model, SearchParams search, String username) {
-        var events =
-                eventsRepository.findAllByUsernameAndCreatedDateAfter(
-                        username, daysFromNow(search.getDaysOffset()));
-
+    private void addEventsToModel(UserData userData, Model model) {
         Map<Long, String> eventsMap = new HashMap<>();
-        events.forEach(event -> eventsMap.put(event.getCreatedDate(), event.getDescription()));
+        userData.getEventList().forEach(event -> eventsMap.put(event.getCreatedDate(), event.getDescription()));
         model.addAttribute("events", eventsMap);
     }
 
