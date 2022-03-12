@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 Types of changes: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security`.
 
 [//]: # (The latest version must start on line 9. The GitHub Actions of this repo rely on it. You ca use UNRELEASED as the version if you don't want to release.)
+## [0.3.0]
+### Add
+- Add basic cache with TTL of up to 100 seconds.
+- Clear user cache on new data for that user.
+- Clear all cache data every 5 minutes.
+
 ## [0.2.0]
 ### Add
 - Add average widgets.
