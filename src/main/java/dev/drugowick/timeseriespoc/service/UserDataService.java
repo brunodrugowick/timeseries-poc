@@ -9,7 +9,6 @@ import dev.drugowick.timeseriespoc.service.cache.UserBasedCacheConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -38,14 +37,12 @@ public class UserDataService {
                 eventsRepository.findAllByUsernameAndCreatedDateAfter(username, daysFromNow));
     }
 
-    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = UserBasedCacheConfig.CACHE_NAME)
     public void saveEvent(String username, Event event) {
         clearUserCache(username);
         event.setUsername(username);
         eventsRepository.save(event);
     }
 
-    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = UserBasedCacheConfig.CACHE_NAME)
     public void saveMeasurement(String username, Measurement measurement) {
         clearUserCache(username);
         measurement.setUsername(username);
