@@ -16,8 +16,29 @@
         google.charts.setOnLoadCallback(drawMeasurementsTable);
         google.charts.setOnLoadCallback(drawEventsTable);
 
-        // TODO too much repetition in this script. Refactor.
+        window.onload = function () {
+            let highAverage = 0;
+            let lowAverage = 0;
+            let bpmAverage = 0;
+            Object.keys(measurements).forEach(function(key) {
+                highAverage += measurements[key][0];
+                lowAverage += measurements[key][1];
+                bpmAverage += measurements[key][2];
 
+                console.log(highAverage);
+                console.log(lowAverage);
+                console.log(bpmAverage);
+
+            });
+
+            const length = Object.keys(measurements).length;
+            $('#high-average').text(Math.round(highAverage / length));
+            $('#low-average').text(Math.round(lowAverage / length));
+            $('#bpm-average').text(Math.round(bpmAverage / length));
+            $('#number-events').text(Object.keys(events).length);
+        }
+
+        // TODO too much repetition in this script. Refactor.
         function drawChart() {
 
             // Create the data table.
@@ -138,7 +159,7 @@
 
 <div class="container-fluid">
     <div class="container-fluid text-left">
-        <div class="card mb-auto shadow-lg">
+        <div class="card mb-auto shadow-sm">
             <div class="card-header">
                 <div class="card-title row">
                     <h4 class="col col-sm-8">Blood Pressure Over Time</h4>
@@ -172,20 +193,78 @@
                    href="/new-event">Add Event</a>
             </div>
         </div>
-        <br><br>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="card mb-auto shadow-lg col-sm-6">
+        <br>
+        <div class="container-fluid row">
+            <div class="col-sm-3">
+                <div class="card mb-auto shadow-sm">
+                    <div class="card-header">
+                        <div class="card-title row">
+                            <h4 class="col col-sm-8">High Average</h4>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h6 class="card-title">Measurements</h6>
-                        <div id="table_measurements_div"></div>
+                        <h1 id="high-average" class="text-center" style="font-size: 500%"></h1>
                     </div>
                 </div>
-                <div class="col-sm-1"></div>
-                <div class="card mb-auto shadow-lg col-sm-5">
+            </div>
+            <div class="col-sm-3">
+                <div class="card mb-auto shadow-sm">
+                    <div class="card-header">
+                        <div class="card-title row">
+                            <h4 class="col col-sm-8">Low Average</h4>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h6 class="card-title">Events</h6>
-                        <div id="table_events_div"></div>
+                        <h1 id="low-average" class="text-center" style="font-size: 500%"></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card mb-auto shadow-sm">
+                    <div class="card-header">
+                        <div class="card-title row">
+                            <h4 class="col-sm-8">Hear Rate Average</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h1 id="bpm-average" class="text-center" style="font-size: 500%"></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="card mb-auto shadow-sm">
+                    <div class="card-header">
+                        <div class="card-title row">
+                            <h4 class="col-sm-8">Number of Events</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h1 id="number-events" class="text-center" style="font-size: 500%"></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card mb-auto shadow-sm">
+                        <div class="card-header">
+                            <h4 class="card-title">Measurements</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="table_measurements_div"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="card mb-auto shadow-sm">
+                        <div class="card-header">
+                            <h4 class="card-title">Events</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="table_events_div"></div>
+                        </div>
                     </div>
                 </div>
             </div>

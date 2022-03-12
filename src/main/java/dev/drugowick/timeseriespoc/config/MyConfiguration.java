@@ -4,9 +4,11 @@ import dev.drugowick.timeseriespoc.service.UserService;
 import dev.drugowick.timeseriespoc.service.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +17,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,13 +26,25 @@ import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
+@EnableScheduling
 @ConditionalOnProperty(name = "app.dev-mode", havingValue = "false")
 public class MyConfiguration {
 
-    private final UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(MyConfiguration.class);
 
-    public MyConfiguration(UserService userService) {
+    private final UserService userService;
+    private final CacheManager cacheManager;
+
+    public MyConfiguration(UserService userService, CacheManager cacheManager) {
         this.userService = userService;
+        this.cacheManager = cacheManager;
+    }
+
+    @Scheduled(fixedDelay = 300000)
+    public void clearAllCaches() {
+        log.info("Cleaning all caches from {}", cacheManager);
+        cacheManager.getCacheNames()
+                .forEach(cacheName -> Objects.requireNonNull(cacheManager.getCache(cacheName)).clear());
     }
 
     @Bean
