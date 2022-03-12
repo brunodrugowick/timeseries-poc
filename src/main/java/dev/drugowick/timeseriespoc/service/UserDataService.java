@@ -4,6 +4,8 @@ import dev.drugowick.timeseriespoc.domain.entity.Event;
 import dev.drugowick.timeseriespoc.domain.entity.Measurement;
 import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
 import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.service.cache.MyConcurrentMapCache;
+import dev.drugowick.timeseriespoc.service.cache.UserBasedCacheConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -28,7 +30,7 @@ public class UserDataService {
         this.cacheManager = cacheManager;
     }
 
-    @Cacheable(key = "#username.concat(@cacheCalculator.getCacheTimestamp(#daysFromNow))", cacheNames = "usersData")
+    @Cacheable(key = "#username.concat(@cacheCalculator.getCacheTimestamp(#daysFromNow))", cacheNames = UserBasedCacheConfig.CACHE_NAME)
     public UserData findAllByUsernameAndCreatedDateAfter(String username, long daysFromNow) {
         log.info("Running DB search for {} with an offset of {}", username, daysFromNow);
         return new UserData(
@@ -36,25 +38,24 @@ public class UserDataService {
                 eventsRepository.findAllByUsernameAndCreatedDateAfter(username, daysFromNow));
     }
 
-    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = "usersData")
+    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = UserBasedCacheConfig.CACHE_NAME)
     public void saveEvent(String username, Event event) {
         clearUserCache(username);
         event.setUsername(username);
         eventsRepository.save(event);
     }
 
-    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = "usersData")
+    @CacheEvict(allEntries = false, beforeInvocation = false, cacheNames = UserBasedCacheConfig.CACHE_NAME)
     public void saveMeasurement(String username, Measurement measurement) {
         clearUserCache(username);
         measurement.setUsername(username);
         measurementsRepository.save(measurement);
     }
 
-    // TODO need to clear only the user's cache, not all (maybe subclass ConcurrentMapCache?)
     private void clearUserCache(String username) {
         cacheManager.getCacheNames().forEach(cacheName -> {
             log.info("Clearing cache {}", cacheName);
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).clear();
+            Objects.requireNonNull((MyConcurrentMapCache) cacheManager.getCache(cacheName)).clearEntriesWithPrefix(username);
         });
     }
 }
