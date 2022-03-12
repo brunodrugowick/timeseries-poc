@@ -1,4 +1,4 @@
-package dev.drugowick.timeseriespoc.service;
+package dev.drugowick.timeseriespoc.service.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

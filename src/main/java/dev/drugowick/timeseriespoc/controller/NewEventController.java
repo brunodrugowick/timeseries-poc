@@ -2,7 +2,7 @@ package dev.drugowick.timeseriespoc.controller;
 
 import dev.drugowick.timeseriespoc.controller.dto.EventInput;
 import dev.drugowick.timeseriespoc.domain.entity.Event;
-import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
+import dev.drugowick.timeseriespoc.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,11 +16,10 @@ import java.security.Principal;
 @Controller
 public class NewEventController extends BaseController {
 
-    // TODO Service Layer
-    private final EventsRepository repository;
+    private final UserDataService userDataService;
 
-    public NewEventController(EventsRepository repository) {
-        this.repository = repository;
+    public NewEventController(UserDataService userDataService) {
+        this.userDataService = userDataService;
     }
 
     @RequestMapping(value = "/new-event", method = RequestMethod.GET)
@@ -35,15 +34,14 @@ public class NewEventController extends BaseController {
                        @ModelAttribute("event") @Valid EventInput eventInput, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "new-event";
 
-        var event = eventFromInput(eventInput, principal.getName());
-        repository.save(event);
+        var event = eventFromInput(eventInput);
+        userDataService.saveEvent(principal.getName(), event);
         return "redirect:/";
     }
 
-    private Event eventFromInput(EventInput eventInput, String name) {
+    private Event eventFromInput(EventInput eventInput) {
         var e = new Event();
         e.setDescription(eventInput.getDescription());
-        e.setUsername(name);
 
         return e;
     }

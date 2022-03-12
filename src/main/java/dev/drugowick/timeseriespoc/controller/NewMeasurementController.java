@@ -2,7 +2,7 @@ package dev.drugowick.timeseriespoc.controller;
 
 import dev.drugowick.timeseriespoc.controller.dto.MeasurementInput;
 import dev.drugowick.timeseriespoc.domain.entity.Measurement;
-import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.service.UserDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,11 +16,10 @@ import java.security.Principal;
 @Controller
 public class NewMeasurementController extends BaseController {
 
-    // TODO Service Layer
-    private final MeasurementsRepository repository;
+    private final UserDataService service;
 
-    public NewMeasurementController(MeasurementsRepository repository) {
-        this.repository = repository;
+    public NewMeasurementController(UserDataService service) {
+        this.service = service;
     }
 
     @RequestMapping(value = "/new", method = RequestMethod.GET)
@@ -35,17 +34,16 @@ public class NewMeasurementController extends BaseController {
                        @ModelAttribute("measurement") @Valid MeasurementInput measurementInput, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "new-measurement";
 
-        var measurement = measurementFromInput(measurementInput, principal.getName());
-        repository.save(measurement);
+        var measurement = measurementFromInput(measurementInput);
+        service.saveMeasurement(principal.getName(), measurement);
         return "redirect:/";
     }
 
-    private Measurement measurementFromInput(MeasurementInput measurementInput, String name) {
+    private Measurement measurementFromInput(MeasurementInput measurementInput) {
         var bp = new Measurement();
         bp.setHigh(measurementInput.getHigh());
         bp.setLow(measurementInput.getLow());
         bp.setHeartRate(measurementInput.getHeartRate());
-        bp.setUsername(name);
 
         return bp;
     }
