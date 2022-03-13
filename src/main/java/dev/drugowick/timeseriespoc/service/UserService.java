@@ -32,7 +32,7 @@ public class UserService {
      * @return the saved entity.
      */
     public UserDTO save(UserDTO userDto) {
-        log.debug("Request to save User : {}", userDto);
+        log.info("Request to save User : {}", userDto.getEmail());
         return userMapper.toDto(userRepository.save(userMapper.toEntity(userDto)));
     }
 
