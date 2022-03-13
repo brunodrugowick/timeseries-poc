@@ -13,16 +13,23 @@ I just want to try to add data and plot it without a complicated setup. Keeping 
    
    spring.h2.console.enabled=true
    
+   # H2
    spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
    spring.datasource.username=sa
-   spring.datasource.password=
-   spring.datasource.driver-class-name=
+   
+   # Postgres
+   #spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+   #spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+   #spring.datasource.username=postgres
+   #spring.datasource.password=password
+   #spring.datasource.driver-class-name=org.postgresql.Driver
+   
    spring.jpa.hibernate.ddl-auto=update
-  
+   
    spring.datasource.hikari.maximum-pool-size=6
    
    spring.security.oauth2.client.registration.google.client-id=123
-   spring.security.oauth2.client.registration.google.client-secret=123    
+   spring.security.oauth2.client.registration.google.client-secret=123
    ```
 3. Run with: 
    ```

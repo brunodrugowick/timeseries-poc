@@ -1,142 +1,138 @@
 package dev.drugowick.timeseriespoc.config;
 
-import dev.drugowick.timeseriespoc.domain.entity.Event;
-import dev.drugowick.timeseriespoc.domain.entity.Measurement;
-import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
-import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.service.UserService;
+import dev.drugowick.timeseriespoc.service.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import java.time.Instant;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
-@EnableScheduling
+@ConditionalOnProperty(name = "app.dev-mode", havingValue = "false")
 public class MyConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(MyConfiguration.class);
 
-    private final MeasurementsRepository measurementsRepository;
-    private final EventsRepository eventsRepository;
-    private final CacheManager cacheManager;
+    private final UserService userService;
 
-    public MyConfiguration(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository, CacheManager cacheManager) {
-        this.measurementsRepository = measurementsRepository;
-        this.eventsRepository = eventsRepository;
-        this.cacheManager = cacheManager;
-    }
-
-    @Scheduled(fixedDelay = 300000)
-    public void clearAllCaches() {
-        log.info("Cleaning all caches from {}", cacheManager);
-        cacheManager.getCacheNames()
-                .forEach(cacheName -> Objects.requireNonNull(cacheManager.getCache(cacheName)).clear());
+    public MyConfiguration(UserService userService) {
+        this.userService = userService;
     }
 
     @Bean
-    @ConditionalOnProperty(name="app.dev-mode", havingValue = "false")
+    CustomSuccessHandler successHandler() {
+        return new CustomSuccessHandler(this.userService);
+    }
+
+    @Bean
     SecurityConfig securityConfig() {
-        return new SecurityConfig();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name="app.dev-mode", havingValue = "true")
-    DevSecurityConfig devSecurityConfig() {
-        return new DevSecurityConfig();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name="app.dev-mode", havingValue = "true")
-    DevData developmentData() {
-        return new DevData(this.measurementsRepository, this.eventsRepository);
+        return new SecurityConfig(successHandler());
     }
 }
 
 /**
- * The production security config, OAuth2.
+ * The default security config, OAuth2.
  */
 class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final CustomSuccessHandler successHandler;
+
+    SecurityConfig(CustomSuccessHandler successHandler) {
+        this.successHandler = successHandler;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login();
+                .oauth2Login()
+                .successHandler(this.successHandler);
     }
 }
 
 /**
- * The local dev security config, that enables a developer/developer user
+ * Success handler to register or update the user when they log in
  */
-class DevSecurityConfig extends WebSecurityConfigurerAdapter {
+class CustomSuccessHandler implements AuthenticationSuccessHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomSuccessHandler.class);
+
+    private static final String GOOGLE_CLIENTID = "google";
+    private final UserService userService;
+
+    public CustomSuccessHandler(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(DevUtil.USERNAME).password("{noop}" + DevUtil.USERNAME).roles("USER");
-    }
-}
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
 
-/**
- * A class data inserts data for the developer user
- */
-class DevData {
+        String clientId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+        OAuth2User oAuthUser = (OAuth2User) authentication.getPrincipal();
 
-    private final MeasurementsRepository measurementsRepository;
-    private final EventsRepository eventsRepository;
+        log.info("Successfully authenticated via OAuth with provider " + clientId);
 
-    public DevData(MeasurementsRepository repository, EventsRepository eventsRepository) {
-        this.measurementsRepository = repository;
-        this.eventsRepository = eventsRepository;
+        String userEmail = getUserEmail(clientId, oAuthUser);
+        Optional<UserDTO> optionalUserDTO = userService.findOne(userEmail);
+        if (optionalUserDTO.isEmpty()) {
+            log.info("Creating new user " + userEmail);
+            userService.save(newUserDTO(
+                    clientId,
+                    oAuthUser));
+        } else {
 
-        System.out.println("Adding development data.");
-        addData();
-    }
+            // Provider information gets overwritten based on user email.
+            // TODO provide a better implementation, linking the User account with several providers.
+            log.info("Updating user provider information " + userEmail);
+            UserDTO userDTOToUpdate = optionalUserDTO.get();
+            userDTOToUpdate.setProvider(clientId);
+            userDTOToUpdate.setProviderId(oAuthUser.getName());
 
-    private void addData() {
-        for (int i = 0; i < 50; i++) {
-            var createdDateOffset = (long) i * 60 * 60 * 24 * 1000;
-            Random r = new Random();
-
-            var bp = new Measurement();
-            bp.setHigh(ThreadLocalRandom.current().nextInt(110, 199));
-            bp.setLow(ThreadLocalRandom.current().nextInt(60, 110));
-            bp.setHeartRate(ThreadLocalRandom.current().nextInt(40, 110));
-            bp.setUsername(DevUtil.USERNAME);
-            measurementsRepository.save(bp);
-
-            // Changing create date for dev data after saving
-            bp.setCreatedDate(Instant.now().toEpochMilli() - createdDateOffset);
-            measurementsRepository.save(bp);
-
-            if (i % 5 == 0) {
-                var e = new Event();
-                e.setDescription("Event number " + i);
-                e.setUsername(DevUtil.USERNAME);
-                eventsRepository.save(e);
-
-                // Changing create date for dev data after saving
-                e.setCreatedDate(Instant.now().toEpochMilli() - createdDateOffset);
-                eventsRepository.save(e);
-            }
+            userService.save(userDTOToUpdate);
         }
-    }
-}
 
-record DevUtil() {
-    public static String USERNAME = "developer";
+        httpServletResponse
+                .sendRedirect("/");
+
+    }
+
+    private String getUserEmail(String clientId, OAuth2User user) {
+        String userEmail = null;
+        if (clientId.equals(GOOGLE_CLIENTID)) { //  || clientId.equals(GITHUB_CLIENTID)
+            userEmail = user.getAttributes().get("email").toString();
+        }
+
+        return userEmail;
+    }
+
+    private UserDTO newUserDTO(String clientId, OAuth2User user) {
+        UserDTO userDTO = null;
+        if (clientId.equals(GOOGLE_CLIENTID)) { //  || clientId.equals(GITHUB_CLIENTID)
+            userDTO = UserDTO.builder()
+                    .email(user.getAttributes().get("email").toString())
+                    .enabled(true)
+                    .fullName(user.getAttributes().get("name").toString())
+                    .provider(clientId)
+                    .providerId(user.getName())
+                    .build();
+        }
+
+        return userDTO;
+    }
 }
