@@ -8,4 +8,5 @@ import java.util.List;
 public interface EventsRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByUsernameAndCreatedDateAfter(String username, Long createdDateAfter);
+    List<Event> findAllByCreatedDateAfterAndCreatedDateBefore(Long startDate, Long endDate);
 }

@@ -19,11 +19,11 @@
       <span class="-caret-left" th:text="${useremail}"></span>
     </div>
 
-    <div class="-caret-left">
+    <div class="-caret-left" th:if="${useremail != ''}">
       <form action="/logout"
             method="post">
         <input class="btn btn-link" type="submit"
-               value="Sair" />
+               value="Logout" />
         <input type="hidden"
                th:name="${_csrf.parameterName}"
                th:value="${_csrf.token}"/>

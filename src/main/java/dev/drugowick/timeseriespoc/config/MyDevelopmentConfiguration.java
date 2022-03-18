@@ -2,8 +2,10 @@ package dev.drugowick.timeseriespoc.config;
 
 import dev.drugowick.timeseriespoc.domain.entity.Event;
 import dev.drugowick.timeseriespoc.domain.entity.Measurement;
+import dev.drugowick.timeseriespoc.domain.entity.Snapshot;
 import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
 import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.domain.repository.SnapshotRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +24,12 @@ public class MyDevelopmentConfiguration {
 
     private final MeasurementsRepository measurementsRepository;
     private final EventsRepository eventsRepository;
+    private final SnapshotRepository snapshotRepository;
 
-    public MyDevelopmentConfiguration(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository) {
+    public MyDevelopmentConfiguration(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository, SnapshotRepository snapshotRepository) {
         this.measurementsRepository = measurementsRepository;
         this.eventsRepository = eventsRepository;
+        this.snapshotRepository = snapshotRepository;
     }
 
     @Bean
@@ -35,7 +39,7 @@ public class MyDevelopmentConfiguration {
 
     @Bean
     DevData developmentData() {
-        return new DevData(this.measurementsRepository, this.eventsRepository);
+        return new DevData(this.measurementsRepository, this.eventsRepository, this.snapshotRepository);
     }
 }
 
@@ -58,10 +62,12 @@ class DevData {
 
     private final MeasurementsRepository measurementsRepository;
     private final EventsRepository eventsRepository;
+    private final SnapshotRepository snapshotRepository;
 
-    public DevData(MeasurementsRepository repository, EventsRepository eventsRepository) {
+    public DevData(MeasurementsRepository repository, EventsRepository eventsRepository, SnapshotRepository snapshotRepository) {
         this.measurementsRepository = repository;
         this.eventsRepository = eventsRepository;
+        this.snapshotRepository = snapshotRepository;
 
         System.out.println("Adding development data.");
         addData();
@@ -92,6 +98,15 @@ class DevData {
                 // Changing create date for dev data after saving
                 e.setCreatedDate(Instant.now().toEpochMilli() - createdDateOffset);
                 eventsRepository.save(e);
+            }
+
+            if (i % 10 == 0) {
+                var s = new Snapshot();
+                s.setStartDate(Instant.now().toEpochMilli() - createdDateOffset);
+                s.setEndDate(Instant.now().toEpochMilli() - createdDateOffset + 5 * 60 * 60 * 24 * 1000);
+                s.setUsername(DevUtil.USERNAME);
+
+                snapshotRepository.save(s);
             }
         }
     }
