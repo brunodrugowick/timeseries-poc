@@ -4,6 +4,7 @@ import dev.drugowick.timeseriespoc.domain.entity.Event;
 import dev.drugowick.timeseriespoc.domain.entity.Measurement;
 import dev.drugowick.timeseriespoc.domain.repository.EventsRepository;
 import dev.drugowick.timeseriespoc.domain.repository.MeasurementsRepository;
+import dev.drugowick.timeseriespoc.domain.repository.SnapshotRepository;
 import dev.drugowick.timeseriespoc.service.cache.MyConcurrentMapCache;
 import dev.drugowick.timeseriespoc.service.cache.UserBasedCacheConfig;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class UserDataService {
@@ -22,11 +24,13 @@ public class UserDataService {
     private final MeasurementsRepository measurementsRepository;
     private final EventsRepository eventsRepository;
     private final CacheManager cacheManager;
+    private final SnapshotRepository snapshotRepository;
 
-    public UserDataService(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository, CacheManager cacheManager) {
+    public UserDataService(MeasurementsRepository measurementsRepository, EventsRepository eventsRepository, CacheManager cacheManager, SnapshotRepository snapshotRepository) {
         this.measurementsRepository = measurementsRepository;
         this.eventsRepository = eventsRepository;
         this.cacheManager = cacheManager;
+        this.snapshotRepository = snapshotRepository;
     }
 
     @Cacheable(key = "#username.concat(@cacheCalculator.getCacheTimestamp(#daysFromNow))", cacheNames = UserBasedCacheConfig.CACHE_NAME)
@@ -54,6 +58,16 @@ public class UserDataService {
             log.info("Clearing cache {}", cacheName);
             Objects.requireNonNull((MyConcurrentMapCache) cacheManager.getCache(cacheName)).clearEntriesWithPrefix(username);
         });
+    }
+
+    public UserData findBySnapshotId(UUID snapshotId) {
+        var snapshot = snapshotRepository.getById(snapshotId);
+        var startDate = snapshot.getStartDate();
+        var endDate = snapshot.getEndDate();
+        return new UserData(
+                measurementsRepository.findAllByCreatedDateAfterAndCreatedDateBefore(startDate, endDate),
+                eventsRepository.findAllByCreatedDateAfterAndCreatedDateBefore(startDate, endDate)
+        );
     }
 }
 

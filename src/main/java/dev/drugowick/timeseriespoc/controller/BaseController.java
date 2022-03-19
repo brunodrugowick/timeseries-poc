@@ -4,6 +4,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.security.Principal;
+import java.time.Instant;
 
 public class BaseController {
 
@@ -14,5 +15,12 @@ public class BaseController {
             return ((OAuth2AuthenticationToken) principal).getPrincipal().getAttribute("email");
         }
         return principal.getName();
+    }
+
+    // This is a gambiarra, the notion of "now" should be related to the data or the same "now" from when doing the
+    // actual request for the data... anywayyyyyy...
+    @ModelAttribute("now")
+    public Long now() {
+        return Instant.now().toEpochMilli();
     }
 }
