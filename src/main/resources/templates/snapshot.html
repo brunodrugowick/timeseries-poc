@@ -109,24 +109,46 @@
 <br>
 
 <div class="container-fluid">
-    <div class="container-fluid text-left">
-        <div class="card mb-auto shadow-sm">
-            <div class="card-header">
-                <div class="card-title row">
-                    <h4 class="col col-sm-6">Blood Pressure Over Time</h4>
-                    <div th:if="${snapshot.isPublic()}" class="container-sm container-fluid alert-warning card col-sm-6">
-                        <p>This is a public Snapshot:
-                            <a th:href="${'/public/' + snapshot.getUuid()}"
-                               th:text="${'/public/' + snapshot.getUuid()}"></a>
-                        </p>
+    <div class="container-fluid row">
+        <div class="col-sm-3">
+            <div class="card mb-auto shadow-sm">
+                <div class="card-header">
+                    <div class="card-title row">
+                        <h4 class="col col-sm-8">Snapshot</h4>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div id="chart_div"></div>
+                <div class="card-body">
+                    <h5>
+                        <p>
+                            <span th:text="${snapshot.getDescription()}"></span>
+                        </p>
+                        <br><b>Start date:</b> <span th:text="${#dates.format(new java.util.Date(snapshot.getStartDate()))}" class="text-center"></span>
+                        <br><b>End Date:</b> <span th:text="${#dates.format(new java.util.Date(snapshot.getEndDate()))}" class="text-center"></span>
+                    </h5>
+                </div>
             </div>
         </div>
-        <br>
+        <div class="col-sm-9">
+            <div class="card mb-auto shadow-sm">
+                <div class="card-header">
+                    <div class="row">
+                        <h4 class="card-title col-sm-6">Blood Pressure Over Time</h4>
+                        <div th:if="${snapshot.isPublic()}" class="container-sm container-fluid alert-warning card col-sm-6">
+                            <p>This is a public Snapshot:
+                                <a th:href="${'/public/' + snapshot.getUuid()}"
+                                   th:text="${'/public/' + snapshot.getUuid()}"></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="chart_div"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container-fluid text-left">
         <div class="container-fluid row">
             <div class="col-sm-3">
                 <div class="card mb-auto shadow-sm">
