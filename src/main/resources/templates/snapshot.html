@@ -7,9 +7,9 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
         // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
-        const measurements = /*[[${data.measurementList}]]*/'noValue';
-        const events = /*[[${data.eventList}]]*/'noValue';
-        const maxMeasurement = parseInt(/*[[${maxMeasurement}]]*/'noValue') + 15;
+        const measurements = /*[[${userData.measurementList}]]*/'noValue';
+        const events = /*[[${userData.eventList}]]*/'noValue';
+        const maxMeasurement = parseInt(/*[[${userData.maxMeasurement}]]*/'noValue') + 15;
 
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
@@ -50,7 +50,7 @@
 
             // Add measurements series
             Object.keys(measurements).forEach(function(key) {
-                const epochDate = parseInt(key);
+                const epochDate = measurements[key].createdDate;
                 data.addRow([
                     new Date(epochDate), // X axis
                     measurements[key].high, measurements[key].low, measurements[key].heartRate, // measurement
@@ -61,7 +61,7 @@
 
             // Add events series
             Object.keys(events).forEach(function(key) {
-                const epochDate = parseInt(key);
+                const epochDate = events[key].createdDate;
                 const description = events[key].description;
                 data.addRow([
                     new Date(epochDate), // X axis

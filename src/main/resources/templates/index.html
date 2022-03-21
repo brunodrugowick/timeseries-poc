@@ -7,9 +7,9 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
         // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
-        const measurements = /*[[${measurements}]]*/'noValue';
-        const events = /*[[${events}]]*/'noValue';
-        const maxMeasurement = parseInt(/*[[${maxMeasurement}]]*/'noValue') + 15;
+        const measurements = /*[[${userData.measurementList}]]*/'noValue';
+        const events = /*[[${userData.eventList}]]*/'noValue';
+        const maxMeasurement = parseInt(/*[[${userData.maxMeasurement}]]*/'noValue') + 15;
 
         google.charts.load('current', {'packages':['corechart', 'table']});
         google.charts.setOnLoadCallback(drawChart);
@@ -21,9 +21,9 @@
             let lowAverage = 0;
             let bpmAverage = 0;
             Object.keys(measurements).forEach(function(key) {
-                highAverage += measurements[key][0];
-                lowAverage += measurements[key][1];
-                bpmAverage += measurements[key][2];
+                highAverage += measurements[key].high;
+                lowAverage += measurements[key].low;
+                bpmAverage += measurements[key].heartRate;
             });
 
             const length = Object.keys(measurements).length;
@@ -52,10 +52,10 @@
 
             // Add measurements series
             Object.keys(measurements).forEach(function(key) {
-                const epochDate = parseInt(key);
+                const epochDate = measurements[key].createdDate;
                 data.addRow([
                     new Date(epochDate), // X axis
-                    measurements[key][0], measurements[key][1], measurements[key][2], // measurement
+                    measurements[key].high, measurements[key].low, measurements[key].heartRate, // measurement
                     null, null, null // events
                 ]);
             });
@@ -63,13 +63,12 @@
 
             // Add events series
             Object.keys(events).forEach(function(key) {
-                const epochDate = parseInt(key);
-                const description = events[key];
+                const epochDate = events[key].createdDate;
+                const description = events[key].description;
                 data.addRow([
                     new Date(epochDate), // X axis
                     null, null, null, // measurements
                     maxMeasurement / 10, `${description.substring(0, 10)}...`, description // events (they're bars that go all the way to the top
-
                 ]);
             });
 
@@ -119,8 +118,8 @@
             data.addColumn('number', 'Heart Rate (BPM)');
 
             Object.keys(measurements).forEach(function(key) {
-                const epochDate = parseInt(key);
-                data.addRow([ new Date(epochDate), measurements[key][0], measurements[key][1], measurements[key][2] ]);
+                const epochDate = measurements[key].createdDate;
+                data.addRow([ new Date(epochDate), measurements[key].high, measurements[key].low, measurements[key].heartRate ]);
             });
             data.sort([{column: 0, desc: true}]);
 
@@ -134,7 +133,7 @@
             data.addColumn('string', 'Description');
 
             Object.keys(events).forEach(function(key) {
-                const epochDate = parseInt(key);
+                const epochDate = events[key].createdDate;
                 data.addRow([ new Date(epochDate), events[key] ]);
             });
             data.sort([{column: 0, desc: true}]);

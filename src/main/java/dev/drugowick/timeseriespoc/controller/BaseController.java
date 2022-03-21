@@ -20,7 +20,7 @@ public class BaseController {
     // This is a gambiarra, the notion of "now" should be related to the data or the same "now" from when doing the
     // actual request for the data... anywayyyyyy...
     @ModelAttribute("now")
-    public Long now() {
+    public long now() {
         return Instant.now().toEpochMilli();
     }
 }
