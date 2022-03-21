@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SnapshotService {
@@ -22,6 +23,11 @@ public class SnapshotService {
     public List<Snapshot> findAllByUsername(String username) {
         log.info("Running DB search of Snapshots for {}", username);
         return snapshotRepository.findAllByUsername(username);
+    }
+
+    public Snapshot getByUuid(UUID uuid) {
+        log.info("Running DB search for Snapshot {}", uuid);
+        return snapshotRepository.getById(uuid);
     }
 
 }

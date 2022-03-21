@@ -74,7 +74,7 @@ class DevData {
     }
 
     private void addData() {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 1; i < 51; i++) {
             var createdDateOffset = (long) i * 60 * 60 * 24 * 1000;
             Random r = new Random();
 
@@ -105,6 +105,8 @@ class DevData {
                 s.setStartDate(Instant.now().toEpochMilli() - createdDateOffset);
                 s.setEndDate(Instant.now().toEpochMilli() - createdDateOffset + 5 * 60 * 60 * 24 * 1000);
                 s.setUsername(DevUtil.USERNAME);
+                s.setDescription("This is the snapshot number " + i);
+                s.setPublic(i > 20);
 
                 snapshotRepository.save(s);
             }

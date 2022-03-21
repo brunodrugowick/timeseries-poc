@@ -113,7 +113,13 @@
         <div class="card mb-auto shadow-sm">
             <div class="card-header">
                 <div class="card-title row">
-                    <h4 class="col col-sm-8">Blood Pressure Over Time</h4>
+                    <h4 class="col col-sm-6">Blood Pressure Over Time</h4>
+                    <div th:if="${snapshot.isPublic()}" class="container-sm container-fluid alert-warning card col-sm-6">
+                        <p>This is a public Snapshot:
+                            <a th:href="${'/public/' + snapshot.getUuid()}"
+                               th:text="${'/public/' + snapshot.getUuid()}"></a>
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="card-body">

@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface SnapshotRepository extends JpaRepository<Snapshot, UUID> {
 
     List<Snapshot> findAllByUsername(String username);
+    Snapshot findByUuidAndIsPublic(UUID uuid, boolean isPublic);
 }

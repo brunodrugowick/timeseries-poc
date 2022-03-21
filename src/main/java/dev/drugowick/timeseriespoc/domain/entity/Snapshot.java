@@ -22,8 +22,10 @@ public class Snapshot {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
+    private String description;
     private Long startDate;
     private Long endDate;
+    private boolean isPublic;
 
     @CreatedDate
     private Long createdDate;
