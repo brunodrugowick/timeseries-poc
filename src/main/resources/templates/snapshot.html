@@ -122,8 +122,10 @@
                         <p>
                             <span th:text="${snapshot.getDescription()}"></span>
                         </p>
-                        <br><b>Start date:</b> <span th:text="${#dates.format(new java.util.Date(snapshot.getStartDate()))}" class="text-center"></span>
-                        <br><b>End Date:</b> <span th:text="${#dates.format(new java.util.Date(snapshot.getEndDate()))}" class="text-center"></span>
+                        <br><span class="badge badge-pill text-monospace"
+                                  style="background-color: antiquewhite">Start date:</span> <span th:text="${#dates.format(new java.util.Date(snapshot.getStartDate()))}" class="text-center"></span>
+                        <br><span class="badge badge-pill text-monospace"
+                                  style="background-color: antiquewhite">End Date:</span> <span th:text="${#dates.format(new java.util.Date(snapshot.getEndDate()))}" class="text-center"></span>
                     </h5>
                 </div>
             </div>
