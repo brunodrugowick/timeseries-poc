@@ -158,21 +158,34 @@
                 <div class="card-title row">
                     <h4 class="col col-sm-8">Blood Pressure Over Time</h4>
                     <div class="float-right col col-sm-4">
-                        <form th:action="@{/filter}">
-                            <div class="row">
-                                <div class="col-sm-4 col-form-label"></div>
-                                <select id="daysOffset" class="form-control col-sm-6" autofocus
-                                        th:name="daysOffset" onchange="this.form.submit()">
-                                    <option th:selected="${search.daysOffset} == 1" value="1">Last day</option>
-                                    <option th:selected="${search.daysOffset} == 3" value="3">Last 3 days</option>
-                                    <option th:selected="${search.daysOffset} == 5" value="5">Last 5 days</option>
-                                    <option th:selected="${search.daysOffset} == 10" value="10">Last 10 days</option>
-                                    <option th:selected="${search.daysOffset} == 30" value="30">Last 30 days</option>
-                                    <option th:selected="${search.daysOffset} == 999999" value="999999">Everything</option>
-                                </select>
-                                <div class="col-sm-2"></div>
+                        <div class="row">
+                            <div class="col-sm-8 col-form-label">
+                                <form th:action="@{/filter}">
+                                    <select id="daysOffset" class="form-control col-sm-6" autofocus
+                                            th:name="daysOffset" onchange="this.form.submit()">
+                                        <option th:selected="${search.daysOffset} == 1" value="1">Last day</option>
+                                        <option th:selected="${search.daysOffset} == 3" value="3">Last 3 days</option>
+                                        <option th:selected="${search.daysOffset} == 5" value="5">Last 5 days</option>
+                                        <option th:selected="${search.daysOffset} == 10" value="10">Last 10 days</option>
+                                        <option th:selected="${search.daysOffset} == 30" value="30">Last 30 days</option>
+                                        <option th:selected="${search.daysOffset} == 999999" value="999999">Everything</option>
+                                    </select>
+                                </form>
                             </div>
-                        </form>
+                            <div class="col-sm-4">
+                                <form th:action="@{/snapshots}"
+                                      method="post">
+                                    <input class="btn" type="submit"
+                                           value="Save" />
+                                    <input th:name="startDate" th:value="${userData.startDate}">
+                                    <input th:name="endDate" th:value="${userData.endDate}">
+                                    <input th:name="daysOffset" th:value="${search.daysOffset}">
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}"/>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -30,4 +30,15 @@ public class SnapshotService {
         return snapshotRepository.getById(uuid);
     }
 
+    public Snapshot save(Long startDate, Long endDate, String user) {
+        // TODO
+        var s = new Snapshot();
+        s.setUsername(user);
+        s.setStartDate(startDate);
+        s.setEndDate(endDate);
+        s.setDescription("Empty");
+        s.setPublic(true);
+        return snapshotRepository.save(s);
+    }
+
 }
