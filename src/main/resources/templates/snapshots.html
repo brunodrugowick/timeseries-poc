@@ -56,6 +56,10 @@
                    style="white-space: nowrap;"
                    th:href="'/snapshots/' + ${snapshot.getUuid()}"
                    th:text="View"></a>
+                <a class="btn btn-secondary"
+                   style="white-space: nowrap;"
+                   th:href="'/snapshots/edit/' + ${snapshot.getUuid()}"
+                   th:text="Edit"></a>
             </td>
         </tr>
         </tbody>
