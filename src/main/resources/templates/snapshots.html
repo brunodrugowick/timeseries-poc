@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/webjars/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="/webjars/bootstrap-table/bootstrap-table.min.css">
+
+    <meta charset="UTF-8">
+    <title>Snapshots</title>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header (${useremail})"></div>
+<br>
+
+<div class="container-fluid">
+
+    <table class="table table-striped"
+           data-toggle="table"
+           data-toolbar="#toolbar"
+           data-search="true"
+           data-show-search-clear-button="true"
+           data-trim-on-search="false"
+           data-show-fullscreen="false"
+           data-show-pagination-switch="true"
+           data-pagination="true"
+           data-page-size="10"
+           data-side-pagination="client"
+           data-page-list="[10, 25, 50, 100, 200, All]"
+           data-sortable="true"
+           data-show-columns="false"
+           data-show-columns-toggle-all="false"
+           data-minimum-count-columns="4">
+        <thead>
+        <tr class="text-left">
+            <th scope="col" data-sortable="true">Description</th>
+            <th scope="col" data-sortable="true">Start Date</th>
+            <th scope="col" data-sortable="true">End Date</th>
+            <th scope="col" data-sortable="true">Public</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="text-left" th:each="snapshot : ${snapshots}">
+            <td th:text="${snapshot.getDescription()}"></td>
+            <td th:text="${#dates.format(new java.util.Date(snapshot.getStartDate()))}"></td>
+            <td th:text="${#dates.format(new java.util.Date(snapshot.getEndDate()))}"></td>
+            <td>
+                <label>
+                    Public
+                    <input disabled th:checked="${snapshot.isPublic()}" type="checkbox"/>
+                </label>
+            </td>
+            <td>
+                <a class="btn btn-primary"
+                   style="white-space: nowrap;"
+                   th:href="'/snapshots/' + ${snapshot.getUuid()}"
+                   th:text="View"></a>
+                <a class="btn btn-secondary"
+                   style="white-space: nowrap;"
+                   th:href="'/snapshots/edit/' + ${snapshot.getUuid()}"
+                   th:text="Edit"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container-fluid" id="footer">
+    <br><br>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/popper.js/popper.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/bootstrap-table/bootstrap-table.min.js"></script>
+</body>
+</html>
