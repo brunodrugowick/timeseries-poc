@@ -75,13 +75,15 @@ public class UserDataService {
         var snapshot = snapshotRepository.getById(snapshotId);
         var startDate = snapshot.getStartDate();
         var endDate = snapshot.getEndDate();
-        var measurements = measurementsRepository.findAllByCreatedDateAfterAndCreatedDateBefore(startDate, endDate);
+        var username = snapshot.getUsername();
+        var measurements = measurementsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, startDate, endDate);
+        var events = eventsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, startDate, endDate);
         return new UserData(
                 startDate,
                 endDate,
                 getMaxInSet(measurements),
                 measurements,
-                eventsRepository.findAllByCreatedDateAfterAndCreatedDateBefore(startDate, endDate)
+                events
         );
     }
 }

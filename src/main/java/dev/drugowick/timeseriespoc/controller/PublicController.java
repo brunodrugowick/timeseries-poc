@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/public")
-public class PublicController {
+public class PublicController extends BaseController {
 
     private final SnapshotService snapshotService;
     private final UserDataService userDataService;
@@ -24,9 +24,10 @@ public class PublicController {
 
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET)
     public String viewSnapshot(@PathVariable("uuid") UUID uuid, Model model) {
-        var snapshot = snapshotService.getByUuid(uuid);
-        if (!snapshot.isPublic()) return "redirect:/";
+        var optionalSnapshot = snapshotService.getPublicSnapshot(uuid);
+        if (optionalSnapshot.isEmpty() || !optionalSnapshot.get().isPublic()) return "redirect:/";
 
+        var snapshot = optionalSnapshot.get();
         var userData = userDataService.findBySnapshotId(uuid);
 
         model.addAttribute("userData", userData);

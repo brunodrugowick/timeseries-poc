@@ -4,10 +4,11 @@ import dev.drugowick.timeseriespoc.domain.entity.Snapshot;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SnapshotRepository extends JpaRepository<Snapshot, UUID> {
 
     List<Snapshot> findAllByUsername(String username);
-    Snapshot findByUuidAndIsPublic(UUID uuid, boolean isPublic);
+    Optional<Snapshot> findByUuidAndIsPublic(UUID uuid, boolean isPublic);
 }

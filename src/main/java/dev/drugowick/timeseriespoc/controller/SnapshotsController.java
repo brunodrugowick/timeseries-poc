@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/snapshots")
-public class SnapshotsController {
+public class SnapshotsController extends BaseController {
 
     private final SnapshotService snapshotService;
     private final UserDataService userDataService;

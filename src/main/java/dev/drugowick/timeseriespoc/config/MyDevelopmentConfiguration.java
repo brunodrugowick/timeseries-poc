@@ -52,7 +52,7 @@ class DevSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser(DevUtil.USERNAME).password("{noop}" + DevUtil.USERNAME).roles("USER")
-                .and().withUser("strange").password("{noop}strange").roles("USER");
+                .and().withUser(DevUtil.STRANGER).password("{noop}" + DevUtil.STRANGER).roles("USER");
     }
 }
 
@@ -71,10 +71,11 @@ class DevData {
         this.snapshotRepository = snapshotRepository;
 
         System.out.println("Adding development data.");
-        addData();
+        addData(DevUtil.USERNAME);
+        addData(DevUtil.STRANGER);
     }
 
-    private void addData() {
+    private void addData(String username) {
         for (int i = 1; i < 51; i++) {
             var createdDateOffset = (long) i * 60 * 60 * 24 * 1000;
             Random r = new Random();
@@ -83,7 +84,7 @@ class DevData {
             bp.setHigh(ThreadLocalRandom.current().nextInt(110, 199));
             bp.setLow(ThreadLocalRandom.current().nextInt(60, 110));
             bp.setHeartRate(ThreadLocalRandom.current().nextInt(40, 110));
-            bp.setUsername(DevUtil.USERNAME);
+            bp.setUsername(username);
             measurementsRepository.save(bp);
 
             // Changing create date for dev data after saving
@@ -93,7 +94,7 @@ class DevData {
             if (i % 5 == 0) {
                 var e = new Event();
                 e.setDescription("Event number " + i);
-                e.setUsername(DevUtil.USERNAME);
+                e.setUsername(username);
                 eventsRepository.save(e);
 
                 // Changing create date for dev data after saving
@@ -105,7 +106,7 @@ class DevData {
                 var s = new Snapshot();
                 s.setStartDate(Instant.now().toEpochMilli() - createdDateOffset);
                 s.setEndDate(Instant.now().toEpochMilli() - createdDateOffset + 5 * 60 * 60 * 24 * 1000);
-                s.setUsername(DevUtil.USERNAME);
+                s.setUsername(username);
                 s.setDescription("This is the snapshot number " + i);
                 s.setPublic(i > 20);
 
@@ -117,4 +118,5 @@ class DevData {
 
 record DevUtil() {
     public static String USERNAME = "developer";
+    public static String STRANGER = "stranger";
 }
