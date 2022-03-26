@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,6 +29,11 @@ public class SnapshotService {
     public Snapshot getByUuid(UUID uuid) {
         log.info("Running DB search for Snapshot {}", uuid);
         return snapshotRepository.getById(uuid);
+    }
+
+    public Optional<Snapshot> getPublicSnapshot(UUID uuid) {
+        log.info("Running DB search for Snapshot {}", uuid);
+        return snapshotRepository.findByUuidAndIsPublic(uuid, true);
     }
 
     public Snapshot save(Snapshot snapshot) {

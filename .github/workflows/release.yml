@@ -28,7 +28,7 @@ jobs:
         if: ${{ steps.read-version.outputs.version != '' }}
         id: check-release
         run: |
-          VERSION=$(git ls-remote --tags origin | grep ${{ steps.read-version.outputs.version }} || [[ $? == 1 ]] && echo '')
+          VERSION=$(git ls-remote --tags origin | grep --fixed-strings ${{ steps.read-version.outputs.version }} || [[ $? == 1 ]] && echo '')
           MISSING=$([[ -z "$VERSION" ]] && echo 'true' || echo 'false')
           echo ::set-output name=missing::$MISSING
       - name: create release
