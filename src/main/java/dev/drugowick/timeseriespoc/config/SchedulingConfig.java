@@ -3,11 +3,13 @@ package dev.drugowick.timeseriespoc.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Objects;
 
+@Configuration
 @EnableScheduling
 public class SchedulingConfig {
 
