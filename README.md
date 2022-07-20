@@ -31,8 +31,13 @@ I just want to try to add data and plot it without a complicated setup. Keeping 
    spring.security.oauth2.client.registration.google.client-id=123
    spring.security.oauth2.client.registration.google.client-secret=123
    ```
-3. Run with: 
+3. Provide a postgres database that matches the configuration on the previous step. I recommend using Docker.
+
+4. Run with: 
    ```
    ./mvnw spring-boot:run -Dspring-boot.run.profiles=personal`
    ```
+
+> _NOTE_: You can also configure your IDE to set the `personal` profile.   
+
 4. Go to `http://localhost:8080` and login with user `developer` and password `developer`.

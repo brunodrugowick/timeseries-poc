@@ -134,7 +134,7 @@
 
             Object.keys(events).forEach(function(key) {
                 const epochDate = events[key].createdDate;
-                data.addRow([ new Date(epochDate), events[key] ]);
+                data.addRow([ new Date(epochDate), events[key].description ]);
             });
             data.sort([{column: 0, desc: true}]);
 
