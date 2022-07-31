@@ -18,17 +18,19 @@
             let highAverage = 0;
             let lowAverage = 0;
             let bpmAverage = 0;
+            const length = Object.keys(measurements).length;
             Object.keys(measurements).forEach(function(key) {
                 highAverage += measurements[key].high;
                 lowAverage += measurements[key].low;
                 bpmAverage += measurements[key].heartRate;
             });
 
-            const length = Object.keys(measurements).length;
-            $('#high-average').text(Math.round(highAverage / length));
-            $('#low-average').text(Math.round(lowAverage / length));
-            $('#bpm-average').text(Math.round(bpmAverage / length));
-            $('#number-events').text(Object.keys(events).length);
+            if (length > 0) {
+                $('#high-average').text(Math.round(highAverage / length));
+                $('#low-average').text(Math.round(lowAverage / length));
+                $('#bpm-average').text(Math.round(bpmAverage / length));
+                $('#number-events').text(Object.keys(events).length);
+            }
         }
 
         // TODO too much repetition in this script. Refactor.
