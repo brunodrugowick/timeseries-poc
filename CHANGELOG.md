@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 Types of changes: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security`.
 
 [//]: # (The latest version must start on line 9. The GitHub Actions of this repo rely on it. You ca use UNRELEASED as the version if you don't want to release.)
+## [0.5.4]
+### Fix
+- Fix NaN (Not a Number) showing on widgets when there's no data.
+
 ## [0.5.3]
 ### Fix 
 - Fix events description not showing on home page widget.
