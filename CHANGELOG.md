@@ -6,47 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 Types of changes: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security`.
 
 [//]: # (The latest version must start on line 9. The GitHub Actions of this repo rely on it. You ca use UNRELEASED as the version if you don't want to release.)
+## [0.6.0]
+### Added
+- Add basic Admin page with info from the app.
+
 ## [0.5.4]
-### Fix
+### Fixed
 - Fix NaN (Not a Number) showing on widgets when there's no data.
 
 ## [0.5.3]
-### Fix 
+### Fixed
 - Fix events description not showing on home page widget.
 
 ## [0.5.2]
-### Fix
+### Fixed
 - Fix cache cleanup schedule.
 
 ## [0.5.1]
-### Fix
+### Fixed
 - Fix version release workflow.
 - Fix Snapshots that could retrieve data from other users.
 
 ## [0.5.0]
-### Add
+### Added
 - Add shareable Snapshots (rudimentary).
 
 ## [0.4.0]
-### Add
+### Added
 - Start saving user profile.
 
 ## [0.3.0]
-### Add
+### Added
 - Add basic cache with TTL of up to 100 seconds.
 - Clear user cache on new data for that user.
 - Clear all cache data every 5 minutes.
 
 ## [0.2.0]
-### Add
+### Added
 - Add average widgets.
 
 ## [0.1.0]
-### Add
+### Added
 - Add filter (last X days).
 
 ## [0.0.9]
-### Fix
+### Fixed
 - Fix legend and axis label position.
 
 ## [0.0.8]
