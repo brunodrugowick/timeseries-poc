@@ -11,15 +11,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.*;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +43,13 @@ public class MyConfiguration {
     }
 
     @Bean
+    CustomAuthoritiesMapper authoritiesMapper() {
+        return new CustomAuthoritiesMapper();
+    }
+
+    @Bean
     SecurityConfig securityConfig() {
-        return new SecurityConfig(successHandler());
+        return new SecurityConfig(successHandler(), authoritiesMapper());
     }
 }
 
@@ -51,18 +59,45 @@ public class MyConfiguration {
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomSuccessHandler successHandler;
+    private final GrantedAuthoritiesMapper authoritiesMapper;
 
-    SecurityConfig(CustomSuccessHandler successHandler) {
+    SecurityConfig(CustomSuccessHandler successHandler, GrantedAuthoritiesMapper authoritiesMapper) {
         this.successHandler = successHandler;
+        this.authoritiesMapper = authoritiesMapper;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login()
-                .successHandler(this.successHandler);
+                .oauth2Login(configurer -> configurer
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userAuthoritiesMapper(this.authoritiesMapper))
+                        .successHandler(this.successHandler));
+    }
+}
+
+/**
+ * Authorities mapper to intercept authorities from provider and assign ADMIN role to my user (hardcoded).
+ * (from <a href="https://docs.spring.io/spring-security/reference/servlet/oauth2/login/advanced.html#oauth2login-advanced-map-authorities-grantedauthoritiesmapper">...</a>)
+ */
+class CustomAuthoritiesMapper implements GrantedAuthoritiesMapper {
+    @Override
+    public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+        authorities.forEach(authority -> {
+            if (authority instanceof OidcUserAuthority oidcUserAuthority) {
+                var email = oidcUserAuthority.getIdToken().getEmail();
+                if ("bruno.drugowick@gmail.com".equals(email)) {
+                    SimpleGrantedAuthority admin = new SimpleGrantedAuthority("ROLE_ADMIN");
+                    mappedAuthorities.add(admin);
+                }
+            }
+            mappedAuthorities.add(authority);
+        });
+        return mappedAuthorities;
     }
 }
 
@@ -81,7 +116,7 @@ class CustomSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
 
         String clientId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
         OAuth2User oAuthUser = (OAuth2User) authentication.getPrincipal();

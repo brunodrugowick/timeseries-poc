@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+        // From https://medium.com/@reachansari/google-chart-example-with-spring-boot-cd25ead09bd3
+        const userMeasurements = /*[[${userMeasurements}]]*/'noValue';
+
+        google.charts.load('current', {'packages':['corechart', 'table']});
+        google.charts.setOnLoadCallback(drawUserMeasurementsTable);
+
+        const tableOptions = {
+            showRowNumber: false,
+            width: '100%',
+            allowHtml: false,
+            // page: 'enable',
+            // pageSize: 30,
+            // pagingButtons: 'auto'
+        };
+
+        function drawUserMeasurementsTable() {
+            const data = new google.visualization.DataTable();
+            data.addColumn('string', 'Username');
+            data.addColumn('number', 'Measurements');
+
+            Object.keys(userMeasurements).forEach(function(key) {
+                data.addRow([ userMeasurements[key].email, userMeasurements[key].count ]);
+            });
+            data.sort([{column: 1, desc: true}]);
+
+            var table = new google.visualization.Table(document.getElementById('table_usermeasurements_div'));
+            table.draw(data, tableOptions);
+        }
+
+    </script>
+
+    <title>My Blood Pressure</title>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header (${useremail})"></div>
+<br>
+
+<div class="container-fluid">
+    <div class="container-fluid text-left">
+        <br>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card mb-auto shadow-sm">
+                        <div class="card-header">
+                            <h4 class="card-title">User Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="table_usermeasurements_div"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" id="footer">
+    <br><br>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
