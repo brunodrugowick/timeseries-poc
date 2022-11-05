@@ -51,7 +51,7 @@ class DevSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser(DevUtil.USERNAME).password("{noop}" + DevUtil.USERNAME).roles("USER")
+                .withUser(DevUtil.USERNAME).password("{noop}" + DevUtil.USERNAME).roles("USER", "ADMIN")
                 .and().withUser(DevUtil.STRANGER).password("{noop}" + DevUtil.STRANGER).roles("USER");
     }
 }
