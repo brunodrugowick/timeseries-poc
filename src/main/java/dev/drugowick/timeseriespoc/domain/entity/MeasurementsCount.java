@@ -9,8 +9,10 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class MeasurementCount {
+public class MeasurementsCount {
 
     private String email;
-    private Integer count;
+    private Integer measurements;
+    private Integer events;
+    private Integer snapshots;
 }

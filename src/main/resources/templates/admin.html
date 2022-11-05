@@ -25,9 +25,16 @@
             const data = new google.visualization.DataTable();
             data.addColumn('string', 'Username');
             data.addColumn('number', 'Measurements');
+            data.addColumn('number', 'Events');
+            data.addColumn('number', 'Snapshots');
 
             Object.keys(userMeasurements).forEach(function(key) {
-                data.addRow([ userMeasurements[key].email, userMeasurements[key].count ]);
+                data.addRow([
+                    userMeasurements[key].email,
+                    userMeasurements[key].measurements,
+                    userMeasurements[key].events,
+                    userMeasurements[key].snapshots,
+                ]);
             });
             data.sort([{column: 1, desc: true}]);
 
