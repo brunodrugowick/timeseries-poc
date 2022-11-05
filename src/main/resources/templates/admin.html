@@ -25,8 +25,7 @@
             const data = new google.visualization.DataTable();
             data.addColumn('string', 'Username');
             data.addColumn('number', 'Measurements');
-            console.log(userMeasurements)
-            console.log(userMeasurements)
+
             Object.keys(userMeasurements).forEach(function(key) {
                 data.addRow([ userMeasurements[key].email, userMeasurements[key].count ]);
             });

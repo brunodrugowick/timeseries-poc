@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+  <link href='/webjars/bootstrap/css/bootstrap.min.css' rel='stylesheet'>
+  <meta charset="UTF-8">
+  <title>My Blood Pressure</title>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header (${useremail})"></div>
+<br>
+
+<div class="container-fluid">
+  <div class="container-fluid text-left">
+    <br>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+          <div class="card mb-auto shadow-sm">
+            <div class="card-header">
+              <h4 class="card-title">Error</h4>
+            </div>
+            <div class="card-body">
+              <div id="error">
+                <h1>You should not be here...</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="footer">
+  <br><br>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
