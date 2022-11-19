@@ -8,6 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,4 +31,8 @@ public class Measurement {
     private Long createdDate;
 
     private String username;
+
+    public List<Integer> asList() {
+        return Arrays.asList(high, low, heartRate);
+    }
 }

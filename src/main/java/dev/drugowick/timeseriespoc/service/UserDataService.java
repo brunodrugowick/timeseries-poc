@@ -13,6 +13,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public class UserDataService {
 
     private static final Logger log = LoggerFactory.getLogger(UserDataService.class);
+    public static final int DEFAULTMAXMEASUREMENT = 200;
+    public static final int DEFAULTMINMEASUREMENT = 40;
 
     private final MeasurementsRepository measurementsRepository;
     private final EventsRepository eventsRepository;
@@ -43,13 +46,19 @@ public class UserDataService {
                 daysFromNow,
                 now,
                 getMaxInSet(measurements),
+                getMinInSet(measurements),
                 measurements,
                 eventsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, daysFromNow, now));
     }
 
     private Integer getMaxInSet(List<Measurement> measurements) {
-        return measurements.stream().map(Measurement::getHigh).reduce((i, j) -> i > j ? i : j)
-                .orElse(200);
+        return measurements.stream().map(m -> Collections.max(m.asList())).reduce((i, j) -> i > j ? i : j)
+                .orElse(DEFAULTMAXMEASUREMENT);
+    }
+
+    private Integer getMinInSet(List<Measurement> measurements) {
+        return measurements.stream().map(m -> Collections.min(m.asList())).reduce((i, j) -> i < j ? i : j)
+                .orElse(DEFAULTMINMEASUREMENT);
     }
 
     public void saveEvent(String username, Event event) {
@@ -82,6 +91,7 @@ public class UserDataService {
                 startDate,
                 endDate,
                 getMaxInSet(measurements),
+                getMinInSet(measurements),
                 measurements,
                 events
         );
