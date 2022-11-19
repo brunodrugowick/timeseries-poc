@@ -15,6 +15,7 @@ public class UserData {
     private Long startDate;
     private Long endDate;
     private Integer maxMeasurement;
+    private Integer minMeasurement;
     private List<Measurement> measurementList;
     private List<Event> eventList;
 }

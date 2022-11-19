@@ -10,6 +10,7 @@
         const measurements = /*[[${userData.measurementList}]]*/'noValue';
         const events = /*[[${userData.eventList}]]*/'noValue';
         const maxMeasurement = parseInt(/*[[${userData.maxMeasurement}]]*/'noValue') + 15;
+        const minMeasurement = parseInt(/*[[${userData.minMeasurement}]]*/'noValue') - 15;
 
         google.charts.load('current', {'packages':['corechart', 'table']});
         google.charts.setOnLoadCallback(drawChart);
@@ -70,7 +71,7 @@
                 data.addRow([
                     new Date(epochDate), // X axis
                     null, null, null, // measurements
-                    maxMeasurement / 10, `${description.substring(0, 10)}...`, description // events (they're bars that go all the way to the top
+                    minMeasurement + 20, `${description.substring(0, 10)}...`, description // events (they're bars that go all the way to the top
                 ]);
             });
 
@@ -83,7 +84,10 @@
                 tooltip: { isHtml: 'true' },
                 vAxis: {
                     maxValue: maxMeasurement,
-                    viewWindow: { max: maxMeasurement }
+                    viewWindow: {
+                        max: maxMeasurement,
+                        min: minMeasurement,
+                    }
                 },
                 hAxis: {
                     format: 'dd/MM HH:mm:ss'
