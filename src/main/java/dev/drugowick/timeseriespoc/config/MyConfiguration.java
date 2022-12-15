@@ -47,11 +47,6 @@ public class MyConfiguration {
     CustomAuthoritiesMapper authoritiesMapper() {
         return new CustomAuthoritiesMapper();
     }
-
-    @Bean
-    SecurityConfig securityConfig() {
-        return new SecurityConfig(successHandler(), authoritiesMapper());
-    }
 }
 
 /**
@@ -70,7 +65,7 @@ class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
