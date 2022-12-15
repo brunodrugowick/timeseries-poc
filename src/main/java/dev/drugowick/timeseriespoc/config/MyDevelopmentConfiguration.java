@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
@@ -94,7 +93,6 @@ class DevData {
     private void addData(String username) {
         for (int i = 1; i < 51; i++) {
             var createdDateOffset = (long) i * 60 * 60 * 24 * 1000;
-            Random r = new Random();
 
             var bp = new Measurement();
             bp.setHigh(ThreadLocalRandom.current().nextInt(110, 199));
