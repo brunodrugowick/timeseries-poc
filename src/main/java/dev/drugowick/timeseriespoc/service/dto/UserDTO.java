@@ -1,8 +1,7 @@
 package dev.drugowick.timeseriespoc.service.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.*;
-
-import javax.validation.constraints.Email;
 
 @Getter
 @Setter

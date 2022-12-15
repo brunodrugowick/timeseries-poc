@@ -3,6 +3,7 @@ package dev.drugowick.timeseriespoc.controller;
 import dev.drugowick.timeseriespoc.controller.dto.EventInput;
 import dev.drugowick.timeseriespoc.domain.entity.Event;
 import dev.drugowick.timeseriespoc.service.UserDataService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.validation.Valid;
 import java.security.Principal;
 
 @Controller

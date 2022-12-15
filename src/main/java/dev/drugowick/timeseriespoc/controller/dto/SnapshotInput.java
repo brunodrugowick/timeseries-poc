@@ -1,12 +1,12 @@
 package dev.drugowick.timeseriespoc.controller.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Getter
