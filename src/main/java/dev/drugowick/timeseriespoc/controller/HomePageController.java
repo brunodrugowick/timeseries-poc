@@ -18,7 +18,7 @@ public class HomePageController extends BaseController {
         this.userDataService = userDataService;
     }
 
-    @RequestMapping
+    @RequestMapping("/")
     public String homePage(Principal principal, Model model) {
 
         var search = new SearchParams();
