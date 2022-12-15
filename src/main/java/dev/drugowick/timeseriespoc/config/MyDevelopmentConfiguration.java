@@ -9,10 +9,11 @@ import dev.drugowick.timeseriespoc.domain.repository.SnapshotRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import java.time.Instant;
@@ -34,11 +35,6 @@ public class MyDevelopmentConfiguration {
     }
 
     @Bean
-    DevSecurityConfig devSecurityConfig() {
-        return new DevSecurityConfig();
-    }
-
-    @Bean
     DevData developmentData() {
         return new DevData(this.measurementsRepository, this.eventsRepository, this.snapshotRepository);
     }
@@ -47,17 +43,27 @@ public class MyDevelopmentConfiguration {
 /**
  * The local dev security config, that enables a developer/developer user
  */
-class DevSecurityConfig extends WebSecurityConfigurerAdapter {
+@Configuration
+@ConditionalOnProperty(name = "app.dev-mode", havingValue = "true")
+class DevSecurityConfig {
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(DevUtil.USERNAME).password("{noop}" + DevUtil.USERNAME).roles("USER", "ADMIN")
-                .and().withUser(DevUtil.STRANGER).password("{noop}" + DevUtil.STRANGER).roles("USER");
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        var admin = User
+                .withUsername(DevUtil.USERNAME)
+                .password("{noop}" + DevUtil.USERNAME)
+                .roles("USER", "ADMIN")
+                .build();
+        var user = User
+                .withUsername(DevUtil.STRANGER)
+                .password("{noop}" + DevUtil.STRANGER)
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(admin, user);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         // set the name of the attribute the CsrfToken will be populated on
         requestHandler.setCsrfRequestAttributeName(null);
@@ -68,6 +74,7 @@ class DevSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().csrf((csrf) -> csrf
                         .csrfTokenRequestHandler(requestHandler)
                 );
+        return http.build();
     }
 }
 
