@@ -32,8 +32,6 @@ import java.util.Set;
 @ConditionalOnProperty(name = "app.dev-mode", havingValue = "false")
 public class MyConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(MyConfiguration.class);
-
     private final UserService userService;
 
     public MyConfiguration(UserService userService) {
@@ -73,8 +71,8 @@ class SecurityConfig {
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN")
+        http.authorizeHttpRequests()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login(configurer -> configurer
