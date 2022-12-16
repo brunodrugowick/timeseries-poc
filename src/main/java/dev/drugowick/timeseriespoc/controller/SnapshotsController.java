@@ -4,12 +4,12 @@ import dev.drugowick.timeseriespoc.controller.dto.SnapshotInput;
 import dev.drugowick.timeseriespoc.domain.entity.Snapshot;
 import dev.drugowick.timeseriespoc.service.SnapshotService;
 import dev.drugowick.timeseriespoc.service.UserDataService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class SnapshotsController extends BaseController {
 
     @RequestMapping(value = "/new", method = RequestMethod.POST)
     public String saveSnapshot(@ModelAttribute("snapshot") @Valid SnapshotInput snapshotInput, BindingResult bindingResult,
-                               Principal principal, Model model) {
+                               Principal principal) {
         if (bindingResult.hasErrors()) {
             return "edit-snapshot";
         }
@@ -66,7 +66,7 @@ public class SnapshotsController extends BaseController {
 
     @RequestMapping(value = "/edit/{uuid}", method = RequestMethod.POST)
     public String putSnapshot(@ModelAttribute("snapshot") @Valid SnapshotInput snapshotInput, BindingResult bindingResult,
-                               Principal principal, Model model) {
+                               Principal principal) {
         if (bindingResult.hasErrors()) {
             return "edit-snapshot";
         }
