@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Snapshot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
     private String description;
