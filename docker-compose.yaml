@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:15.3
+    container_name: timeseries-poc-postgres
+    environment:
+      POSTGRES_DB: timeseries-poc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: timeseries-poc-service
+    network_mode: host
+    depends_on:
+      - postgres
+    env_file: myenv.env
+volumes:
+  postgres-data:
+
