@@ -48,6 +48,16 @@ public class HomePageController extends BaseController {
         return "index";
     }
 
+    @RequestMapping("/events")
+    public String eventsTable(@ModelAttribute SearchParams searchParams,
+                              Principal principal, Model model) {
+        var userData = userDataService.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(
+                principal.getName(), searchParams.getStartDate(), searchParams.getEndDate());
+
+        model.addAttribute("userData", userData);
+        return "measurements_events";
+    }
+
     private long daysFromNow(long daysOffset) {
         return this.now() - daysOffset * 60 * 60 * 24 * 1000;
     }

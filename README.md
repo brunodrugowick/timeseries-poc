@@ -41,3 +41,21 @@ I just want to try to add data and plot it without a complicated setup. Keeping 
 > _NOTE_: You can also configure your IDE to set the `personal` profile.   
 
 4. Go to `http://localhost:8080` and login with user `developer` and password `developer`.
+
+## Docker Compose deployment
+
+To easy deployment I added a `Dockerfile` and a `docker-compose.yml` files. Checkout the repo, create a `myenv.env` file and then run:
+
+```env
+server.port=9095
+spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+spring.datasource.username=postgres
+spring.datasource.password=<password>
+spring.security.oauth2.client.registration.google.client-id=<client-id-from-google>
+spring.security.oauth2.client.registration.google.client-secret=<client-secret-from-google>
+```
+
+```shell
+docker-compose up -d
+```
+

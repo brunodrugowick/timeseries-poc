@@ -192,6 +192,25 @@
                    th:href="${'/snapshots/new?startDate=' + userData.startDate + '&endDate=' + userData.endDate}">
                     Save Snapshot
                 </a>
+                <div class="float-right">
+                    <button
+                            th:hx-get="${'/events?startDate=' + userData.startDate + '&endDate=' + userData.endDate}"
+                            hx-target="#details-modal"
+                            hx-trigger="click"
+                            data-toggle="modal"
+                            data-target="#details-modal"
+                            class="btn btn-outline-primary">Detailed Data</button>
+
+                    <div th:id="details-modal"
+                         class="modal modal-blur fade"
+                         style="display: none"
+                         aria-hidden="false"
+                         tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <br>
@@ -245,31 +264,6 @@
                 </div>
             </div>
         </div>
-        <br>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="card mb-auto shadow-sm">
-                        <div class="card-header">
-                            <h4 class="card-title">Measurements</h4>
-                        </div>
-                        <div class="card-body">
-                            <div id="table_measurements_div"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                    <div class="card mb-auto shadow-sm">
-                        <div class="card-header">
-                            <h4 class="card-title">Events</h4>
-                        </div>
-                        <div class="card-body">
-                            <div id="table_events_div"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -279,5 +273,6 @@
 
 <script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/htmx.org/dist/htmx.min.js"></script>
 </body>
 </html>
