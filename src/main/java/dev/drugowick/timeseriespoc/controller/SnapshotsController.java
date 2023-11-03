@@ -58,9 +58,9 @@ public class SnapshotsController extends BaseController {
     @RequestMapping(value = "/edit/{uuid}", method = RequestMethod.GET)
     public String editSnapshot(@PathVariable("uuid") UUID uuid, Principal principal, Model model) {
         var snapshot = snapshotService.getByUuid(uuid);
-        if (!Objects.equals(principal.getName(), snapshot.getUsername())) return "redirect:/snapshots";
+        if (snapshot.isEmpty() || !Objects.equals(principal.getName(), snapshot.get().getUsername())) return "redirect:/snapshots";
 
-        model.addAttribute("snapshot", snapshot);
+        model.addAttribute("snapshot", snapshot.get());
         return "edit-snapshot";
     }
 
@@ -79,8 +79,10 @@ public class SnapshotsController extends BaseController {
     public String snapshotPage(@PathVariable("uuid") UUID uuid, Model model) {
         var userData = userDataService.findBySnapshotId(uuid);
         var snapshot = snapshotService.getByUuid(uuid);
+        if (snapshot.isEmpty()) return "redirect:/snapshots";
+
         model.addAttribute("userData", userData);
-        model.addAttribute("snapshot", snapshot);
+        model.addAttribute("snapshot", snapshot.get());
 
         return "snapshot";
     }
