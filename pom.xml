@@ -93,6 +93,11 @@
             <artifactId>bootstrap-table</artifactId>
             <version>1.16.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>htmx.org</artifactId>
+            <version>1.9.3</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
