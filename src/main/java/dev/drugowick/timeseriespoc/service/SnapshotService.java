@@ -5,6 +5,7 @@ import dev.drugowick.timeseriespoc.domain.repository.SnapshotRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +27,9 @@ public class SnapshotService {
         return snapshotRepository.findAllByUsername(username);
     }
 
-    public Snapshot getByUuid(UUID uuid) {
+    public Optional<Snapshot> getByUuid(UUID uuid) {
         log.info("Running DB search for Snapshot {}", uuid);
-        return snapshotRepository.getById(uuid);
+        return snapshotRepository.findById(uuid);
     }
 
     public Optional<Snapshot> getPublicSnapshot(UUID uuid) {

@@ -81,7 +81,8 @@ public class UserDataService {
     }
 
     public UserData findBySnapshotId(UUID snapshotId) {
-        var snapshot = snapshotRepository.getById(snapshotId);
+        var optionalSnapshot = snapshotRepository.findById(snapshotId);
+        var snapshot = optionalSnapshot.orElseThrow();
         var startDate = snapshot.getStartDate();
         var endDate = snapshot.getEndDate();
         var username = snapshot.getUsername();
