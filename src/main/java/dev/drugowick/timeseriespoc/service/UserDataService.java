@@ -13,10 +13,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserDataService {
@@ -42,13 +39,17 @@ public class UserDataService {
         log.info("Running DB search for {} with an offset of {} from {}", username, daysFromNow, now);
         var measurements =
                 measurementsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, daysFromNow, now);
+        Collections.sort(measurements);
+
+        var events = eventsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, daysFromNow, now);
+        Collections.sort(events);
         return new UserData(
                 daysFromNow,
                 now,
                 getMaxInSet(measurements),
                 getMinInSet(measurements),
                 measurements,
-                eventsRepository.findAllByUsernameAndCreatedDateAfterAndCreatedDateBefore(username, daysFromNow, now));
+                events);
     }
 
     private Integer getMaxInSet(List<Measurement> measurements) {

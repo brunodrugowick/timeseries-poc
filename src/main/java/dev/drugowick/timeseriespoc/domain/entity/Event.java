@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @RequiredArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Event {
+public class Event implements Comparable<Event> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,4 +26,9 @@ public class Event {
     private Long createdDate;
 
     private String username;
+
+    @Override
+    public int compareTo(Event o) {
+        return getCreatedDate().compareTo(o.getCreatedDate());
+    }
 }
