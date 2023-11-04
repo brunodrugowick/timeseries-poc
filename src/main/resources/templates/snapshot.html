@@ -151,6 +151,26 @@
                 </div>
                 <div class="card-body">
                     <div id="chart_div"></div>
+                    <br>
+                    <div class="float-right">
+                    <button
+                            th:hx-get="${'/events?startDate=' + userData.startDate + '&endDate=' + userData.endDate}"
+                            hx-target="#details-modal"
+                            hx-trigger="click"
+                            data-toggle="modal"
+                            data-target="#details-modal"
+                            class="btn btn-outline-primary">Detailed Data</button>
+
+                    <div th:id="details-modal"
+                         class="modal modal-blur fade"
+                         style="display: none"
+                         aria-hidden="false"
+                         tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content"></div>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -216,5 +236,6 @@
 
 <script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/htmx.org/dist/htmx.min.js"></script>
 </body>
 </html>
