@@ -18,14 +18,14 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <td>Create Date</td>
-                                        <td>Blood Pressure</td>
-                                        <td>Heart Rate</td>
+                                        <th>&#128197; Create Date</th>
+                                        <th>&#9738; Blood Pressure</th>
+                                        <th>&#128420; Heart Rate</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="measurement : ${userData.measurementList}">
-                                        <td th:text="${#dates.format(measurement.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                        <td th:text="${'&#128197; ' + #dates.format(measurement.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
                                         <td th:text="${'&#9738; ' + measurement.high + ' x ' + measurement.low}"></td>
                                         <td th:text="${'&#128420; ' + measurement.heartRate}"></td>
                                     </tr>
@@ -44,14 +44,14 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Create Date</th>
-                                        <th>Description</th>
+                                        <th>&#128197; Create Date</th>
+                                        <th>&#128221; Description</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="event : ${userData.eventList}">
-                                        <td th:text="${#dates.format(event.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
-                                        <td th:text="${event.description}"></td>
+                                        <td th:text="${'&#128197; ' + #dates.format(event.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                        <td th:text="${'&#128221; ' + event.description}"></td>
                                     </tr>
                                 </tbody>
                             </table>
