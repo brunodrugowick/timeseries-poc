@@ -23,7 +23,7 @@ public class CustomSQLRepository {
     public static final String COUNTALLSQL = """
                 SELECT
                     U.email as email,
-                    COUNT(distinct M.id) as measurements,
+                    COUNT(distinct M.uuid) as measurements,
                     COUNT(distinct E.id) AS events,
                     COUNT(distinct S.uuid) AS snapshots
                 FROM MEASUREMENT M
