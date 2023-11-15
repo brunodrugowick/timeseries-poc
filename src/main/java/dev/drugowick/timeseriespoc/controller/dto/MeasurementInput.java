@@ -24,6 +24,7 @@ public class MeasurementInput {
     @Min(value = 1, message = "Low (mmHg) should be greater than 0")
     private Integer low;
 
+    @NotNull(message = "Heart rate (BPM) is mandatory")
     @Digits(fraction = 0, integer = 3, message = "Heart rate (BPM) should be lower than 1000")
     @Min(value = 1, message = "Heart rate (BPM) should be greater than 0")
     private Integer heartRate;
